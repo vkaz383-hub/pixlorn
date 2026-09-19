@@ -15,7 +15,7 @@
   <style>
     :root {
       --bg-dark: #070414;
-      --card-bg: rgba(22, 14, 46, 0.85);
+      --card-bg: rgba(22, 14, 46, 0.88);
       --card-border: rgba(168, 142, 255, 0.22);
       --card-border-glow: rgba(196, 181, 253, 0.45);
       
@@ -26,6 +26,7 @@
       
       --accent-cyan: #38bdf8;
       --accent-green: #2dd4bf;
+      --accent-star: #f59e0b;
       --text-main: #f8fafc;
       --text-muted: #cbd5e1;
       --text-dim: #94a3b8;
@@ -37,7 +38,7 @@
       padding: 0;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     body {
@@ -55,7 +56,6 @@
       padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
 
-    /* Главный контейнер приложения */
     .app-container {
       width: 100%;
       max-width: 440px;
@@ -72,7 +72,7 @@
     }
 
     .header {
-      padding: 14px 20px;
+      padding: 14px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -89,13 +89,13 @@
       gap: 12px;
     }
 
-    /* Рамка под оригинальный файл logo.png */
+    /* Рамка под оригинальный файл logo.png с аккуратным кадрированием */
     .brand-icon-frame {
       width: 46px;
       height: 46px;
       border-radius: 14px;
       background: #0d0724;
-      border: 1px solid rgba(168, 142, 255, 0.35);
+      border: 1.5px solid rgba(168, 142, 255, 0.35);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7), 0 0 16px rgba(56, 189, 248, 0.25);
       display: flex;
       align-items: center;
@@ -139,9 +139,9 @@
     .brand-badge {
       font-size: 0.62rem;
       font-weight: 800;
-      color: #38bdf8;
-      background: rgba(56, 189, 248, 0.12);
-      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #f59e0b;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
       padding: 2px 7px;
       border-radius: 6px;
       letter-spacing: 1px;
@@ -156,21 +156,43 @@
       margin-top: 2px;
     }
 
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Кнопка баланса звёзд в шапке */
+    .star-balance-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.25));
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      padding: 6px 11px;
+      border-radius: 12px;
+      color: #fef08a;
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.2);
+    }
+    .star-balance-btn:active { transform: scale(0.95); }
+
     .icon-btn {
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--card-border);
       color: var(--text-main);
-      width: 40px;
-      height: 40px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 1.05rem;
+      font-size: 1rem;
       transition: all 0.2s ease;
     }
-
     .icon-btn:active {
       transform: scale(0.92);
       background: rgba(157, 128, 252, 0.3);
@@ -179,25 +201,21 @@
     .content-area {
       flex: 1;
       overflow-y: auto;
-      padding: 18px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
       scrollbar-width: none;
     }
-    .content-area::-webkit-scrollbar {
-      display: none;
-    }
+    .content-area::-webkit-scrollbar { display: none; }
 
     .tab-pane {
       display: none;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
       animation: fadeIn 0.25s ease-out forwards;
     }
-    .tab-pane.active {
-      display: flex;
-    }
+    .tab-pane.active { display: flex; }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(8px); }
@@ -226,7 +244,7 @@
     }
 
     .speaker-wave-visual {
-      height: 64px;
+      height: 56px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -255,7 +273,7 @@
 
     @keyframes wavePulse {
       0% { height: 12px; opacity: 0.35; }
-      100% { height: 58px; opacity: 1; filter: drop-shadow(0 0 10px var(--accent-cyan)); }
+      100% { height: 52px; opacity: 1; filter: drop-shadow(0 0 10px var(--accent-cyan)); }
     }
 
     .mode-select-grid {
@@ -294,8 +312,8 @@
     }
 
     .radar-circle {
-      width: 154px;
-      height: 154px;
+      width: 150px;
+      height: 150px;
       border-radius: 50%;
       border: 2px dashed rgba(186, 163, 255, 0.35);
       display: flex;
@@ -308,11 +326,6 @@
       background: radial-gradient(circle, rgba(108, 77, 237, 0.12) 0%, transparent 70%);
     }
 
-    .radar-circle.clean-state {
-      border-color: rgba(45, 212, 191, 0.6);
-      box-shadow: inset 0 0 35px rgba(45, 212, 191, 0.3), 0 0 25px rgba(45, 212, 191, 0.2);
-    }
-
     .radar-sweep {
       position: absolute;
       width: 100%;
@@ -322,14 +335,9 @@
       animation: sweep 2.2s linear infinite;
       display: none;
     }
+    .radar-sweep.active { display: block; }
 
-    .radar-sweep.active {
-      display: block;
-    }
-
-    @keyframes sweep {
-      100% { transform: rotate(360deg); }
-    }
+    @keyframes sweep { 100% { transform: rotate(360deg); } }
 
     .radar-val {
       font-size: 2rem;
@@ -337,11 +345,6 @@
       color: #ffffff;
       text-shadow: 0 0 20px rgba(186, 163, 255, 0.8);
       letter-spacing: -0.5px;
-    }
-
-    .radar-val.clean {
-      color: var(--accent-green);
-      text-shadow: 0 0 20px rgba(45, 212, 191, 0.8);
     }
 
     .radar-sub {
@@ -367,9 +370,10 @@
       gap: 6px;
     }
 
+    /* Золотые кнопки Telegram Stars */
     .btn-turbo {
-      background: linear-gradient(135deg, #a78bfa 0%, #6c4ded 50%, #452eb8 100%);
-      border: 1px solid var(--card-border-glow);
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      border: 1px solid rgba(253, 230, 138, 0.4);
       color: white;
       font-weight: 800;
       font-size: 0.95rem;
@@ -379,21 +383,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      box-shadow: 0 10px 28px rgba(108, 77, 237, 0.45);
+      gap: 8px;
+      box-shadow: 0 10px 28px rgba(245, 158, 11, 0.4);
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       width: 100%;
     }
-
-    .btn-turbo:active {
-      transform: scale(0.97);
-    }
-
-    .btn-turbo.clean-ready {
-      background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%);
-      box-shadow: 0 10px 28px rgba(45, 212, 191, 0.4);
-      border-color: rgba(153, 246, 228, 0.4);
-    }
+    .btn-turbo:active { transform: scale(0.97); }
 
     .cat-row {
       display: flex;
@@ -405,25 +400,9 @@
       margin-bottom: 8px;
       border: 1px solid rgba(255, 255, 255, 0.05);
     }
-
-    .cat-title {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #f8fafc;
-    }
-
-    .cat-desc {
-      font-size: 0.7rem;
-      color: var(--text-dim);
-      margin-top: 2px;
-    }
-
-    .cat-size {
-      font-size: 0.85rem;
-      font-weight: 800;
-      color: var(--lavender-light);
-      font-family: monospace;
-    }
+    .cat-title { font-size: 0.85rem; font-weight: 600; color: #f8fafc; }
+    .cat-desc { font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; }
+    .cat-size { font-size: 0.85rem; font-weight: 800; color: var(--lavender-light); font-family: monospace; }
 
     .nav-bar {
       display: flex;
@@ -447,18 +426,13 @@
       cursor: pointer;
       padding: 6px 18px;
       border-radius: 14px;
-      transition: all 0.2s ease;
     }
-
     .nav-item.active {
       color: #ffffff;
       background: linear-gradient(135deg, rgba(157, 128, 252, 0.25), rgba(108, 77, 237, 0.3));
       border: 1px solid var(--card-border);
     }
-
-    .nav-icon {
-      font-size: 1.25rem;
-    }
+    .nav-icon { font-size: 1.25rem; }
 
     .toast-msg {
       position: absolute;
@@ -478,45 +452,103 @@
       opacity: 0;
       transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       white-space: nowrap;
-      backdrop-filter: blur(16px);
     }
+    .toast-msg.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-    .toast-msg.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
+    /* Шторка покупки звёзд */
+    .stars-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 2, 17, 0.88);
+      backdrop-filter: blur(16px);
+      z-index: 300;
+      align-items: flex-end;
+      justify-content: center;
+      animation: fadeIn 0.2s ease-out;
     }
+    .stars-modal.open { display: flex; }
+
+    .modal-sheet {
+      width: 100%;
+      max-width: 440px;
+      background: #140c33;
+      border: 1.5px solid rgba(245, 158, 11, 0.4);
+      border-radius: 28px 28px 0 0;
+      padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+      box-shadow: 0 -15px 40px rgba(0,0,0,0.8), 0 0 35px rgba(245, 158, 11, 0.2);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .modal-title { font-size: 1.15rem; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 6px; }
+    .close-btn { background: none; border: none; color: #94a3b8; font-size: 1.4rem; cursor: pointer; }
+
+    .star-pack-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 16px 0;
+    }
+    .star-pack-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1.5px solid rgba(245, 158, 11, 0.25);
+      border-radius: 18px;
+      padding: 14px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .star-pack-card:active { transform: scale(0.96); border-color: #f59e0b; background: rgba(245, 158, 11, 0.12); }
+    .pack-stars { font-size: 1.4rem; font-weight: 900; color: #fef08a; }
+    .pack-desc { font-size: 0.68rem; color: var(--text-dim); margin-top: 4px; }
   </style>
 </head>
 <body>
 
 <div class="app-container">
-  
   <div id="toastBox" class="toast-msg">Готово!</div>
 
   <header class="header">
     <div class="brand-wrap">
       <div class="brand-icon-frame">
-        <img src="logo.png" alt="Pixlorn" />
+        <!-- Прямой вызов оригинального файла logo.png со страховкой на онлайн-адрес -->
+        <img 
+          src="logo.png" 
+          alt="Pixlorn" 
+          onerror="this.onerror=null; this.src='https://vkaz383-hub.github.io/pixlorn/logo.png';" 
+        />
       </div>
 
       <div class="brand-info">
         <div class="brand-title-row">
           <span class="brand-title">Pixlorn</span>
-          <span class="brand-badge">PRO</span>
+          <span class="brand-badge">STARS</span>
         </div>
-        <span class="brand-sub" id="brandSub">HyperClean Mobile</span>
+        <span class="brand-sub">HyperClean Mobile</span>
       </div>
     </div>
 
-    <button class="icon-btn" onclick="toggleAudio()" id="audioBtn" title="Звук">🔊</button>
+    <div class="header-right">
+      <!-- Баланс звёзд + кнопка пополнения -->
+      <button class="star-balance-btn" onclick="openStarsModal()">
+        <span>⭐</span>
+        <span id="starBalanceTxt">10</span>
+        <span style="font-size: 0.68rem; opacity: 0.85;">+</span>
+      </button>
+      <button class="icon-btn" onclick="toggleAudio()" id="audioBtn">🔊</button>
+    </div>
   </header>
 
   <main class="content-area">
     
-    <!-- TAB 1: ОЧИСТКА И ВЫДУВ -->
+    <!-- TAB 1: ГЛАВНАЯ (ВЫДУВ + ОЧИСТКА ПАМЯТИ) -->
     <section id="tab-clean" class="tab-pane active">
       
-      <!-- Карточка выдува -->
+      <!-- Карточка выдува со звездой -->
       <div class="hero-speaker-card">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div style="display: flex; align-items: center; gap: 8px;">
@@ -526,7 +558,7 @@
           <span style="font-size: 0.7rem; color: var(--accent-cyan); background: rgba(56,189,248,0.15); padding: 3px 8px; border-radius: 8px; border: 1px solid rgba(56,189,248,0.3);">📳 Haptic</span>
         </div>
 
-        <p style="font-size: 0.74rem; color: var(--text-dim); margin-top: 4px;" id="heroEjectDesc">
+        <p style="font-size: 0.74rem; color: var(--text-dim); margin-top: 4px;">
           Акустическая волна + пульсирующая тактильная вибрация для глубокого выталкивания влаги.
         </p>
 
@@ -541,13 +573,14 @@
         </div>
 
         <div class="mode-select-grid">
-          <div class="mode-chip selected" id="heroChip1" onclick="selectHeroMode(165, 'sawtooth', this)">165 Гц (Вода)</div>
-          <div class="mode-chip" id="heroChip2" onclick="selectHeroMode(240, 'triangle', this)">240 Гц (Пыль)</div>
-          <div class="mode-chip" id="heroChip3" onclick="selectHeroMode(80, 'square', this)">80 Гц (Бас-удар)</div>
+          <div class="mode-chip selected" onclick="selectHeroMode(165, 'sawtooth', this)">165 Гц (Вода)</div>
+          <div class="mode-chip" onclick="selectHeroMode(240, 'triangle', this)">240 Гц (Пыль)</div>
+          <div class="mode-chip" onclick="selectHeroMode(80, 'square', this)">80 Гц (Бас-удар)</div>
         </div>
 
-        <button id="heroWaveBtn" class="btn-turbo" style="background: linear-gradient(135deg, #38bdf8, #6c4ded); box-shadow: 0 8px 24px rgba(56, 189, 248, 0.35);" onclick="toggleHeroEjectWave()">
-          <span id="heroBtnText">🔊 ЗАПУСТИТЬ ВЫДУВ ДИНАМИКА</span>
+        <!-- Кнопка выдува за 1 звезду -->
+        <button id="heroWaveBtn" class="btn-turbo" onclick="runPaidAction('eject_main')">
+          <span id="heroBtnText">⭐ ЗАПУСТИТЬ ВЫДУВ (1 ЗВЕЗДА)</span>
         </button>
       </div>
 
@@ -555,46 +588,46 @@
         <div class="radar-circle" id="radarRing">
           <div class="radar-sweep" id="radarAnim"></div>
           <div class="radar-val" id="cleanVal">2.77</div>
-          <div class="radar-sub" id="cleanSub">ГБ Мусора найдено</div>
+          <div class="radar-sub">ГБ Мусора найдено</div>
         </div>
 
-        <div class="last-clean-badge" id="lastCleanInfo">
-          <span id="lastCleanPrefix">🕒 Последняя очистка: </span>
+        <div class="last-clean-badge">
+          <span>🕒 Последняя очистка: </span>
           <strong id="lastCleanTime">Не выполнялась</strong>
         </div>
       </div>
 
-      <!-- Кнопка очистки памяти -->
-      <button class="btn-turbo" id="cleanBtn" onclick="handleCleanAction()">
-        <span id="cleanBtnText">⚡ ОЧИСТИТЬ ПАМЯТЬ</span>
+      <!-- Кнопка очистки за 1 звезду -->
+      <button class="btn-turbo" id="cleanBtn" onclick="runPaidAction('clean')">
+        <span id="cleanBtnText">⭐ ОЧИСТИТЬ ПАМЯТЬ (1 ЗВЕЗДА)</span>
       </button>
 
       <!-- Сводка накопителя -->
       <div class="card">
-        <div style="font-size: 0.82rem; font-weight: 700; color: #fff; margin-bottom: 8px;" id="storageTitle">📊 Честная сводка накопителя:</div>
+        <div style="font-size: 0.82rem; font-weight: 700; color: #fff; margin-bottom: 8px;">📊 Честная сводка накопителя:</div>
         
         <div class="cat-row">
           <div>
-            <div class="cat-title" id="catSysTitle">Системный кэш приложений</div>
-            <div class="cat-desc" id="catSysDesc">Временные буферы и WebView</div>
+            <div class="cat-title">Системный кэш приложений</div>
+            <div class="cat-desc">Временные буферы и WebView</div>
           </div>
-          <div class="cat-size" id="catSysVal">1.62 ГБ</div>
+          <div class="cat-size">1.62 ГБ</div>
         </div>
         
         <div class="cat-row">
           <div>
-            <div class="cat-title" id="catThumbTitle">Миниатюры галереи (.thumbnails)</div>
-            <div class="cat-desc" id="catThumbDesc">Удаленные кэш-копии фото</div>
+            <div class="cat-title">Миниатюры галереи (.thumbnails)</div>
+            <div class="cat-desc">Удаленные кэш-копии фото</div>
           </div>
-          <div class="cat-size" id="catThumbVal">870 МБ</div>
+          <div class="cat-size">870 МБ</div>
         </div>
         
         <div class="cat-row">
           <div>
-            <div class="cat-title" id="catLogTitle">Кэш дампов и логов</div>
-            <div class="cat-desc" id="catLogDesc">Остаточные отчеты и временные файлы</div>
+            <div class="cat-title">Кэш дампов и логов</div>
+            <div class="cat-desc">Остаточные отчеты и временные файлы</div>
           </div>
-          <div class="cat-size" id="catLogVal">280 МБ</div>
+          <div class="cat-size">280 МБ</div>
         </div>
       </div>
     </section>
@@ -603,8 +636,8 @@
     <section id="tab-eject" class="tab-pane">
       <div class="card" style="text-align: center;">
         <div style="font-size: 2.5rem; margin-bottom: 4px;">🔊</div>
-        <h3 style="color: #fff; font-size: 1.18rem;" id="tab2MainTitle">Акустический генератор 165 Гц</h3>
-        <p style="font-size: 0.78rem; color: var(--text-dim); margin-top: 4px;" id="tab2MainDesc">
+        <h3 style="color: #fff; font-size: 1.18rem;">Акустический генератор 165 Гц</h3>
+        <p style="font-size: 0.78rem; color: var(--text-dim); margin-top: 4px;">
           Генерация физической звуковой волны с синхронизированной вибрацией моторчика.
         </p>
 
@@ -619,22 +652,22 @@
         </div>
 
         <div style="font-size: 1.9rem; font-weight: 800; color: var(--lavender-light); font-family: monospace;" id="freqDisplay">165.0 Hz</div>
-        <div style="font-size: 0.72rem; color: var(--text-dim); margin-bottom: 12px;" id="tab2Sub">Резонансная частота выталкивания</div>
+        <div style="font-size: 0.72rem; color: var(--text-dim); margin-bottom: 12px;">Резонансная частота выталкивания</div>
 
         <div class="mode-select-grid">
-          <div class="mode-chip selected" id="ejectChip1" onclick="selectEjectMode(165, 'sawtooth', this)">165 Гц (Стандарт)</div>
-          <div class="mode-chip" id="ejectChip2" onclick="selectEjectMode(240, 'triangle', this)">240 Гц (Пыль)</div>
-          <div class="mode-chip" id="ejectChip3" onclick="selectEjectMode(80, 'square', this)">80 Гц (Бас-удар)</div>
+          <div class="mode-chip selected" onclick="selectEjectMode(165, 'sawtooth', this)">165 Гц (Стандарт)</div>
+          <div class="mode-chip" onclick="selectEjectMode(240, 'triangle', this)">240 Гц (Пыль)</div>
+          <div class="mode-chip" onclick="selectEjectMode(80, 'square', this)">80 Гц (Бас-удар)</div>
         </div>
 
-        <button id="waveBtn" class="btn-turbo" style="width: 100%; margin-top: 6px;" onclick="toggleEjectWave()">
-          <span id="tab2BtnText">🔊 Запустить продувку</span>
+        <button id="waveBtn" class="btn-turbo" style="width: 100%; margin-top: 6px;" onclick="runPaidAction('eject_tab')">
+          <span id="tab2BtnText">⭐ ЗАПУСТИТЬ ПРОДУВКУ (1 ЗВЕЗДА)</span>
         </button>
       </div>
 
       <div class="card">
-        <div style="font-size: 0.84rem; font-weight: 700; color: #fff; margin-bottom: 6px;" id="instrTitle">💡 Инструкция по очистке:</div>
-        <p style="font-size: 0.76rem; color: var(--text-dim); line-height: 1.45;" id="instrText">
+        <div style="font-size: 0.84rem; font-weight: 700; color: #fff; margin-bottom: 6px;">💡 Инструкция по очистке:</div>
+        <p style="font-size: 0.76rem; color: var(--text-dim); line-height: 1.45;">
           1. Установите громкость мультимедиа на 100%.<br>
           2. Направьте нижний динамик смартфона вниз.<br>
           3. Запустите импульс на 20–30 секунд (моторчик вибрации будет помогать выталкивать капли).
@@ -645,26 +678,26 @@
     <!-- TAB 3: CPU -->
     <section id="tab-cpu" class="tab-pane">
       <div class="card" style="text-align: center;">
-        <h3 style="margin-bottom: 6px; color: #fff;" id="cpuHeader">Мониторинг нагрузки CPU</h3>
+        <h3 style="margin-bottom: 6px; color: #fff;">Мониторинг нагрузки CPU</h3>
         <div style="font-size: 2.8rem; font-weight: 800; color: var(--accent-green); margin: 12px 0; font-family: monospace;" id="cpuTemp">36.2°C</div>
-        <p id="cpuStatusDesc" style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: 16px;">Температура ядер в пределах нормы.</p>
-        <button class="btn-turbo" id="cpuCoolBtn" onclick="coolCPU()">
-          <span id="cpuBtnText">❄️ Снизить фоновую нагрузку</span>
+        <p style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: 16px;">Температура ядер в пределах нормы.</p>
+        <button class="btn-turbo" style="background: linear-gradient(135deg, #a78bfa, #6c4ded); box-shadow: 0 8px 24px rgba(108,77,237,0.35); border-color: rgba(196,181,253,0.4);" onclick="coolCPU()">
+          <span>❄️ Снизить фоновую нагрузку</span>
         </button>
       </div>
 
       <div class="card">
         <div class="cat-row">
           <div>
-            <div class="cat-title" id="cpuBgTitle">Фоновые службы</div>
-            <div class="cat-desc" id="cpuBgDesc">Неактивные процессы в оперативной памяти</div>
+            <div class="cat-title">Фоновые службы</div>
+            <div class="cat-desc">Неактивные процессы в оперативной памяти</div>
           </div>
           <div class="cat-size" style="color: var(--lavender-light);" id="procCount">18 процессов</div>
         </div>
         <div class="cat-row">
           <div>
-            <div class="cat-title" id="cpuRamTitle">Свободно ОЗУ (RAM)</div>
-            <div class="cat-desc" id="cpuRamDesc">Доступно для системы и игр</div>
+            <div class="cat-title">Свободно ОЗУ (RAM)</div>
+            <div class="cat-desc">Доступно для системы и игр</div>
           </div>
           <div class="cat-size" style="color: var(--accent-green);" id="ramFree">3.8 ГБ</div>
         </div>
@@ -675,186 +708,52 @@
   <nav class="nav-bar">
     <div class="nav-item active" onclick="switchTab('tab-clean', this)">
       <div class="nav-icon">🧹</div>
-      <div id="navClean">Очистка</div>
+      <div>Очистка</div>
     </div>
     <div class="nav-item" onclick="switchTab('tab-eject', this)">
       <div class="nav-icon">🔊</div>
-      <div id="navEject">Выдув 165Гц</div>
+      <div>Выдув 165Гц</div>
     </div>
     <div class="nav-item" onclick="switchTab('tab-cpu', this)">
       <div class="nav-icon">❄️</div>
-      <div id="navCpu">CPU</div>
+      <div>CPU</div>
     </div>
   </nav>
 </div>
 
+<!-- ШТОРКА ПОКУПКИ ЗВЁЗД TELEGRAM -->
+<div class="stars-modal" id="starsModal" onclick="closeStarsModal()">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">⭐ Баланс Telegram Stars</div>
+      <button class="close-btn" onclick="closeStarsModal()">✕</button>
+    </div>
+    <p style="font-size: 0.74rem; color: var(--text-dim); line-height: 1.4;">
+      Пополните баланс звёзд для запуска акустического выдува динамика и глубокой очистки памяти.
+    </p>
+
+    <div class="star-pack-grid">
+      <div class="star-pack-card" onclick="buyStarPack(1)">
+        <div class="pack-stars">1 ⭐</div>
+        <div class="pack-desc">Пробный запуск</div>
+      </div>
+      <div class="star-pack-card" onclick="buyStarPack(15)">
+        <div class="pack-stars">15 ⭐</div>
+        <div class="pack-desc">Пакет «Стандарт»</div>
+      </div>
+      <div class="star-pack-card" onclick="buyStarPack(50)">
+        <div class="pack-stars">50 ⭐</div>
+        <div class="pack-desc">Пакет «Pro Ultra»</div>
+      </div>
+    </div>
+
+    <button class="btn-turbo" style="padding: 13px;" onclick="closeStarsModal()">
+      Закрыть окно
+    </button>
+  </div>
+</div>
+
 <script>
-  // Локализация приложения (RU / EN)
-  const I18N = {
-    ru: {
-      brandSub: "HyperClean Мобильный",
-      heroEjectTitle: "Выдув влаги и пыли",
-      heroEjectDesc: "Акустическая волна + пульсирующая тактильная вибрация для глубокого выталкивания влаги.",
-      heroChip1: "165 Гц (Вода)",
-      heroChip2: "240 Гц (Пыль)",
-      heroChip3: "80 Гц (Бас-удар)",
-      heroStart: "🔊 ЗАПУСТИТЬ ВЫДУВ ДИНАМИКА",
-      heroStop: "⏹️ ОСТАНОВИТЬ",
-      junkLabel: "ГБ Мусора найдено",
-      deviceCleaned: "Устройство оптимизировано",
-      lastCleanPrefix: "🕒 Последняя очистка: ",
-      neverCleaned: "Не выполнялась",
-      justNow: "Только что",
-      cleanBtnDefault: "⚡ ОЧИСТИТЬ ПАМЯТЬ",
-      cleanBtnReady: "✨ СИСТЕМА В ПОРЯДКЕ (ПОВТОРИТЬ СКАН)",
-      cleaningProgress: "⏳ ОЧИСТКА ВНУТРЕННЕГО КЭША...",
-      auditProgress: "🔍 СКАНИРОВАНИЕ СИСТЕМЫ...",
-      auditDone: "✅ Память в идеальном состоянии. Мусора нет!",
-      cleanToast: "✨ Память очищена! Система оптимизирована.",
-      storageTitle: "📊 Честная сводка накопителя:",
-      catSysTitle: "Системный кэш приложений",
-      catSysDesc: "Временные буферы и WebView",
-      catThumbTitle: "Миниатюры галереи (.thumbnails)",
-      catThumbDesc: "Удаленные кэш-копии фото",
-      catLogTitle: "Кэш дампов и логов",
-      catLogDesc: "Остаточные отчеты и временные файлы",
-      tab2MainTitle: "Акустический генератор 165 Гц",
-      tab2MainDesc: "Генерация физической звуковой волны с синхронизированной вибрацией моторчика.",
-      tab2Sub: "Резонансная частота выталкивания",
-      tab2BtnStart: "🔊 Запустить продувку",
-      tab2BtnStop: "⏹️ Остановить",
-      ejectChip1: "165 Гц (Стандарт)",
-      ejectChip2: "240 Гц (Пыль)",
-      ejectChip3: "80 Гц (Бас-удар)",
-      instrTitle: "💡 Инструкция по очистке:",
-      instrText: "1. Установите громкость мультимедиа на 100%.<br>2. Направьте нижний динамик смартфона вниз.<br>3. Запустите импульс на 20–30 секунд (моторчик вибрации будет помогать выталкивать капли).",
-      cpuHeader: "Мониторинг нагрузки CPU",
-      cpuStatusNormal: "Температура ядер в пределах нормы.",
-      cpuStatusCool: "Все неактивные службы выгружены. Нагрузка минимальна.",
-      cpuBtnText: "❄️ Снизить фоновую нагрузку",
-      cpuBtnWorking: "⏳ Оптимизация процессов...",
-      cpuBtnDone: "❄️ Нагрузка снижена",
-      cpuBgTitle: "Фоновые службы",
-      cpuBgDesc: "Неактивные процессы в оперативной памяти",
-      cpuRamTitle: "Свободно ОЗУ (RAM)",
-      cpuRamDesc: "Доступно для системы и игр",
-      procNormal: "18 процессов",
-      procCooled: "5 фоновых служб",
-      ramNormal: "3.8 ГБ",
-      ramCooled: "4.9 ГБ свободно",
-      navClean: "Очистка",
-      navEject: "Выдув 165Гц",
-      navCpu: "CPU",
-      soundOn: "Звуки включены",
-      soundOff: "Звуки выключены",
-      ejectStopped: "Выдув остановлен"
-    },
-    en: {
-      brandSub: "HyperClean Mobile",
-      heroEjectTitle: "Water & Dust Eject",
-      heroEjectDesc: "Resonant sound wave + pulsing tactile vibration for deep moisture expulsion.",
-      heroChip1: "165 Hz (Water)",
-      heroChip2: "240 Hz (Dust)",
-      heroChip3: "80 Hz (Bass Pulse)",
-      heroStart: "🔊 START SPEAKER EJECT",
-      heroStop: "⏹️ STOP",
-      junkLabel: "GB Junk Found",
-      deviceCleaned: "Device Optimized",
-      lastCleanPrefix: "🕒 Last cleaned: ",
-      neverCleaned: "Never",
-      justNow: "Just now",
-      cleanBtnDefault: "⚡ CLEAN STORAGE",
-      cleanBtnReady: "✨ SYSTEM TUNED (RE-SCAN)",
-      cleaningProgress: "⏳ CLEANING SYSTEM CACHE...",
-      auditProgress: "🔍 AUDITING STORAGE...",
-      auditDone: "✅ System is in top shape. No junk found!",
-      cleanToast: "✨ Storage cleaned! System optimized.",
-      storageTitle: "📊 Internal Storage Audit:",
-      catSysTitle: "System App Cache",
-      catSysDesc: "Temporary buffers & WebView cache",
-      catThumbTitle: "Gallery Thumbnails (.thumbnails)",
-      catThumbDesc: "Residual cached image previews",
-      catLogTitle: "App Crash Logs & Dumps",
-      catLogDesc: "Residual error reports & temp logs",
-      tab2MainTitle: "165 Hz Acoustic Pulse",
-      tab2MainDesc: "Direct ultrasonic resonance wave paired with mechanical vibration engine.",
-      tab2Sub: "Resonant Ejection Frequency",
-      tab2BtnStart: "🔊 Start Pulse Cycle",
-      tab2BtnStop: "⏹️ Stop Pulse",
-      ejectChip1: "165 Hz (Moisture)",
-      ejectChip2: "240 Hz (Fine Dust)",
-      ejectChip3: "80 Hz (Deep Bass)",
-      instrTitle: "💡 Recommended Steps:",
-      instrText: "1. Turn media volume up to 100%.<br>2. Point the phone's bottom speaker downwards.<br>3. Run the tone for 20–30 seconds (vibration engine helps expel droplets).",
-      cpuHeader: "CPU Workload & Temp",
-      cpuStatusNormal: "Core temperature is optimal and cool.",
-      cpuStatusCool: "Inactive tasks purged. Thermal load is minimal.",
-      cpuBtnText: "❄️ Cool Down CPU Tasks",
-      cpuBtnWorking: "⏳ Purging tasks...",
-      cpuBtnDone: "❄️ Thermal Load Reduced",
-      cpuBgTitle: "Background Services",
-      cpuBgDesc: "Idle background processes in RAM",
-      cpuRamTitle: "Available RAM",
-      cpuRamDesc: "Ready for high-demand apps & games",
-      procNormal: "18 services",
-      procCooled: "5 services",
-      ramNormal: "3.8 GB",
-      ramCooled: "4.9 GB free",
-      navClean: "Clean",
-      navEject: "Eject 165Hz",
-      navCpu: "CPU",
-      soundOn: "Sound enabled",
-      soundOff: "Sound muted",
-      ejectStopped: "Ejection stopped"
-    }
-  };
-
-  let currentLang = 'ru';
-
-  function applyLanguage(lang) {
-    currentLang = lang;
-    const t = I18N[lang];
-
-    document.getElementById('brandSub').innerText = t.brandSub;
-    document.getElementById('heroEjectTitle').innerText = `${t.heroEjectTitle} (${currentFreq} Hz)`;
-    document.getElementById('heroEjectDesc').innerText = t.heroEjectDesc;
-    document.getElementById('heroChip1').innerText = t.heroChip1;
-    document.getElementById('heroChip2').innerText = t.heroChip2;
-    document.getElementById('heroChip3').innerText = t.heroChip3;
-
-    document.getElementById('lastCleanPrefix').innerText = t.lastCleanPrefix;
-    document.getElementById('storageTitle').innerText = t.storageTitle;
-    document.getElementById('catSysTitle').innerText = t.catSysTitle;
-    document.getElementById('catSysDesc').innerText = t.catSysDesc;
-    document.getElementById('catThumbTitle').innerText = t.catThumbTitle;
-    document.getElementById('catThumbDesc').innerText = t.catThumbDesc;
-    document.getElementById('catLogTitle').innerText = t.catLogTitle;
-    document.getElementById('catLogDesc').innerText = t.catLogDesc;
-
-    document.getElementById('tab2MainTitle').innerText = t.tab2MainTitle;
-    document.getElementById('tab2MainDesc').innerText = t.tab2MainDesc;
-    document.getElementById('tab2Sub').innerText = t.tab2Sub;
-    document.getElementById('ejectChip1').innerText = t.ejectChip1;
-    document.getElementById('ejectChip2').innerText = t.ejectChip2;
-    document.getElementById('ejectChip3').innerText = t.ejectChip3;
-    document.getElementById('instrTitle').innerText = t.instrTitle;
-    document.getElementById('instrText').innerHTML = t.instrText;
-
-    document.getElementById('cpuHeader').innerText = t.cpuHeader;
-    document.getElementById('cpuBtnText').innerText = t.cpuBtnText;
-    document.getElementById('cpuBgTitle').innerText = t.cpuBgTitle;
-    document.getElementById('cpuBgDesc').innerText = t.cpuBgDesc;
-    document.getElementById('cpuRamTitle').innerText = t.cpuRamTitle;
-    document.getElementById('cpuRamDesc').innerText = t.cpuRamDesc;
-
-    document.getElementById('navClean').innerText = t.navClean;
-    document.getElementById('navEject').innerText = t.navEject;
-    document.getElementById('navCpu').innerText = t.navCpu;
-
-    refreshCleanUI();
-  }
-
-  // Telegram WebApp API
   const tg = window.Telegram ? window.Telegram.WebApp : null;
   if (tg) {
     tg.ready();
@@ -872,20 +771,77 @@
     }
   }
 
+  let userStars = parseInt(localStorage.getItem('pixlorn_stars_bal') || '10', 10);
   let soundEnabled = true;
   let currentEjectOsc = null;
   let currentFreq = 165;
   let currentWaveType = 'sawtooth';
   let hapticInterval = null;
 
+  function updateStarsUI() {
+    document.getElementById('starBalanceTxt').innerText = userStars;
+    localStorage.setItem('pixlorn_stars_bal', userStars.toString());
+  }
+
+  function openStarsModal() {
+    triggerTgHaptic('medium');
+    document.getElementById('starsModal').classList.add('open');
+  }
+
+  function closeStarsModal() {
+    document.getElementById('starsModal').classList.remove('open');
+  }
+
+  function buyStarPack(amount) {
+    triggerTgHaptic('heavy');
+    closeStarsModal();
+    if (tg && tg.sendData) {
+      tg.sendData(`action:invoice_stars_${amount}`);
+      showToast(`⭐ Запрос на ${amount} звёзд отправлен в чат!`);
+    } else {
+      userStars += amount;
+      updateStarsUI();
+      triggerTgHaptic('success');
+      showToast(`⭐ Начислено +${amount} звёзд!`);
+    }
+  }
+
+  // Единая логика платных процедур за 1 звезду
+  function runPaidAction(type) {
+    if (type === 'eject_main' && currentEjectOsc) {
+      stopHeroEject();
+      return;
+    }
+    if (type === 'eject_tab' && currentEjectOsc) {
+      stopTabEject();
+      return;
+    }
+
+    if (userStars < 1) {
+      triggerTgHaptic('heavy');
+      showToast('❌ Недостаточно звёзд! Пополните баланс.');
+      openStarsModal();
+      return;
+    }
+
+    userStars -= 1;
+    updateStarsUI();
+    triggerTgHaptic('success');
+
+    if (type === 'clean') {
+      runDeepClean();
+    } else if (type === 'eject_main') {
+      startHeroEject();
+    } else if (type === 'eject_tab') {
+      startTabEject();
+    }
+  }
+
   function startEjectHaptics(freq) {
     stopEjectHaptics();
     let intervalTime = freq === 165 ? 540 : (freq === 240 ? 320 : 420);
-
     triggerTgHaptic('heavy');
-    hapticInterval = setInterval(() => {
-      triggerTgHaptic('heavy');
-    }, intervalTime);
+    hapticInterval = setInterval(() => triggerTgHaptic('heavy'), intervalTime);
   }
 
   function stopEjectHaptics() {
@@ -898,133 +854,15 @@
     }
   }
 
-  function getJunkState() {
-    const lastClean = localStorage.getItem('pixlorn_last_clean_ts');
-    const now = Date.now();
-    const t = I18N[currentLang];
-
-    if (!lastClean) {
-      return {
-        isClean: false,
-        totalJunkGB: "2.77",
-        sysCacheGB: "1.62 " + (currentLang === 'ru' ? 'ГБ' : 'GB'),
-        thumbMB: "870 " + (currentLang === 'ru' ? 'МБ' : 'MB'),
-        logMB: "280 " + (currentLang === 'ru' ? 'МБ' : 'MB'),
-        lastCleanText: t.neverCleaned
-      };
-    }
-
-    const elapsedMs = now - parseInt(lastClean, 10);
-    const elapsedMinutes = Math.floor(elapsedMs / (1000 * 60));
-    const elapsedHours = Math.floor(elapsedMinutes / 60);
-
-    let timeText = "";
-    if (elapsedMinutes < 1) {
-      timeText = t.justNow;
-    } else if (elapsedMinutes < 60) {
-      timeText = currentLang === 'ru' ? `${elapsedMinutes} мин. назад` : `${elapsedMinutes}m ago`;
-    } else if (elapsedHours < 24) {
-      timeText = currentLang === 'ru' ? `${elapsedHours} ч. назад` : `${elapsedHours}h ago`;
-    } else {
-      const days = Math.floor(elapsedHours / 24);
-      timeText = currentLang === 'ru' ? `${days} дн. назад` : `${days}d ago`;
-    }
-
-    if (elapsedMinutes < 120) {
-      const minorCacheMB = Math.min(35, Math.floor(elapsedMinutes * 0.3));
-      const mbUnit = currentLang === 'ru' ? ' МБ' : ' MB';
-      return {
-        isClean: true,
-        totalJunkGB: (minorCacheMB / 1024).toFixed(2),
-        totalJunkMB: minorCacheMB,
-        sysCacheGB: (minorCacheMB * 0.6).toFixed(1) + mbUnit,
-        thumbMB: (minorCacheMB * 0.3).toFixed(1) + mbUnit,
-        logMB: (minorCacheMB * 0.1).toFixed(1) + mbUnit,
-        lastCleanText: timeText
-      };
-    } else {
-      const accumulatedGB = Math.min(2.85, 0.5 + (elapsedHours * 0.08)).toFixed(2);
-      const gbUnit = currentLang === 'ru' ? ' ГБ' : ' GB';
-      const mbUnit = currentLang === 'ru' ? ' МБ' : ' MB';
-      return {
-        isClean: false,
-        totalJunkGB: accumulatedGB,
-        sysCacheGB: (accumulatedGB * 0.6).toFixed(2) + gbUnit,
-        thumbMB: Math.floor(accumulatedGB * 300) + mbUnit,
-        logMB: Math.floor(accumulatedGB * 100) + mbUnit,
-        lastCleanText: timeText
-      };
-    }
-  }
-
-  function refreshCleanUI() {
-    const state = getJunkState();
-    const t = I18N[currentLang];
-    const ring = document.getElementById('radarRing');
-    const val = document.getElementById('cleanVal');
-    const sub = document.getElementById('cleanSub');
-    const btn = document.getElementById('cleanBtn');
-    const btnText = document.getElementById('cleanBtnText');
-    const lastCleanEl = document.getElementById('lastCleanTime');
-
-    const catSys = document.getElementById('catSysVal');
-    const catThumb = document.getElementById('catThumbVal');
-    const catLog = document.getElementById('catLogVal');
-
-    lastCleanEl.innerText = state.lastCleanText;
-
-    if (state.isClean) {
-      ring.classList.add('clean-state');
-      val.classList.add('clean');
-      val.innerText = state.totalJunkMB > 0 ? state.totalJunkMB + (currentLang === 'ru' ? " МБ" : " MB") : (currentLang === 'ru' ? "0 МБ" : "0 MB");
-      sub.innerText = t.deviceCleaned;
-      btn.classList.add('clean-ready');
-      btnText.innerText = t.cleanBtnReady;
-    } else {
-      ring.classList.remove('clean-state');
-      val.classList.remove('clean');
-      val.innerText = state.totalJunkGB;
-      sub.innerText = t.junkLabel;
-      btn.classList.remove('clean-ready');
-      btnText.innerText = `${t.cleanBtnDefault} (${state.totalJunkGB} ${currentLang === 'ru' ? 'ГБ' : 'GB'})`;
-    }
-
-    catSys.innerText = state.sysCacheGB;
-    catThumb.innerText = state.thumbMB;
-    catLog.innerText = state.logMB;
-  }
-
-  function handleCleanAction() {
-    triggerTgHaptic('medium');
-    const state = getJunkState();
-    if (state.isClean) {
-      runAuditScan();
-    } else {
-      runDeepClean();
-    }
-  }
-
   function runDeepClean() {
-    const t = I18N[currentLang];
     const radar = document.getElementById('radarAnim');
     const val = document.getElementById('cleanVal');
     const btn = document.getElementById('cleanBtn');
-    const btnText = document.getElementById('cleanBtnText');
     
     btn.disabled = true;
-    btnText.innerText = t.cleaningProgress;
     radar.classList.add('active');
     playTone(600, 0.15);
     triggerTgHaptic('heavy');
-
-    try {
-      if (window.caches) {
-        caches.keys().then(names => {
-          for (let name of names) caches.delete(name);
-        });
-      }
-      sessionStorage.clear();
-    } catch(e) {}
 
     let currentVal = parseFloat(val.innerText) || 2.77;
     const interval = setInterval(() => {
@@ -1033,37 +871,18 @@
       if (currentVal <= 0.05) {
         clearInterval(interval);
         radar.classList.remove('active');
-        
         localStorage.setItem('pixlorn_last_clean_ts', Date.now().toString());
-        
         btn.disabled = false;
         playTone(880, 0.25);
         triggerTgHaptic('success');
-        showToast(t.cleanToast);
-        refreshCleanUI();
+        showToast('✨ Память очищена! Оптимизация завершена.');
+        document.getElementById('lastCleanTime').innerText = 'Только что';
+        document.getElementById('cleanVal').innerText = '0 МБ';
       } else {
         val.innerText = currentVal.toFixed(2);
         playTone(400 + (2.7 - currentVal) * 110, 0.04);
       }
     }, 120);
-  }
-
-  function runAuditScan() {
-    const t = I18N[currentLang];
-    const radar = document.getElementById('radarAnim');
-    const btnText = document.getElementById('cleanBtnText');
-    btnText.innerText = t.auditProgress;
-    radar.classList.add('active');
-    playTone(550, 0.1);
-    triggerTgHaptic('medium');
-
-    setTimeout(() => {
-      radar.classList.remove('active');
-      showToast(t.auditDone);
-      playTone(770, 0.15);
-      triggerTgHaptic('success');
-      refreshCleanUI();
-    }, 1400);
   }
 
   function selectHeroMode(freq, type, el) {
@@ -1073,28 +892,16 @@
     if (el) el.classList.add('selected');
     playTone(freq, 0.08);
     triggerTgHaptic('light');
-
-    document.getElementById('heroEjectTitle').innerText = `${I18N[currentLang].heroEjectTitle} (${currentFreq} Hz)`;
+    document.getElementById('heroEjectTitle').innerText = `Выдув влаги и пыли (${currentFreq} Гц)`;
 
     if (currentEjectOsc) {
       stopHeroEject();
-      startHeroEject();
-    }
-  }
-
-  function toggleHeroEjectWave() {
-    triggerTgHaptic('medium');
-    if (currentEjectOsc) {
-      stopHeroEject();
-    } else {
       startHeroEject();
     }
   }
 
   function startHeroEject() {
-    const t = I18N[currentLang];
     const btn = document.getElementById('heroWaveBtn');
-    const btnText = document.getElementById('heroBtnText');
     const visual = document.getElementById('heroWaveVisual');
     const ctx = getAudioCtx();
     const osc = ctx.createOscillator();
@@ -1108,18 +915,15 @@
     osc.start();
     currentEjectOsc = osc;
 
-    btnText.innerText = `${t.heroStop} (${currentFreq} Hz)`;
-    btn.style.background = "linear-gradient(135deg, #ef4444, #b91c1c)";
+    btn.innerHTML = `<span>⏹️ ОСТАНОВИТЬ (${currentFreq} Гц)</span>`;
+    btn.style.background = 'linear-gradient(135deg, #ef4444, #b91c1c)';
     visual.classList.add('wave-active');
-
     startEjectHaptics(currentFreq);
-    showToast(`📳 ${currentFreq} Hz Pulse Active!`);
+    showToast(`📳 ${currentFreq} Гц импульс активен!`);
   }
 
   function stopHeroEject() {
-    const t = I18N[currentLang];
     const btn = document.getElementById('heroWaveBtn');
-    const btnText = document.getElementById('heroBtnText');
     const visual = document.getElementById('heroWaveVisual');
 
     if (currentEjectOsc) {
@@ -1128,10 +932,10 @@
     }
     stopEjectHaptics();
 
-    btnText.innerText = t.heroStart;
-    btn.style.background = "linear-gradient(135deg, #38bdf8, #6c4ded)";
+    btn.innerHTML = `<span>⭐ ЗАПУСТИТЬ ВЫДУВ (1 ЗВЕЗДА)</span>`;
+    btn.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
     visual.classList.remove('wave-active');
-    showToast(t.ejectStopped);
+    showToast('Выдув остановлен');
   }
 
   function selectEjectMode(freq, type, el) {
@@ -1139,29 +943,18 @@
     currentWaveType = type;
     document.querySelectorAll('#tab-eject .mode-chip').forEach(c => c.classList.remove('selected'));
     if (el) el.classList.add('selected');
-    document.getElementById('freqDisplay').innerText = freq.toFixed(1) + " Hz";
+    document.getElementById('freqDisplay').innerText = freq.toFixed(1) + ' Hz';
     playTone(freq, 0.08);
     triggerTgHaptic('light');
 
     if (currentEjectOsc) {
-      stopEjectWave();
-      startEjectWave();
+      stopTabEject();
+      startTabEject();
     }
   }
 
-  function toggleEjectWave() {
-    triggerTgHaptic('medium');
-    if (currentEjectOsc) {
-      stopEjectWave();
-    } else {
-      startEjectWave();
-    }
-  }
-
-  function startEjectWave() {
-    const t = I18N[currentLang];
+  function startTabEject() {
     const btn = document.getElementById('waveBtn');
-    const btnText = document.getElementById('tab2BtnText');
     const visual = document.getElementById('waveVisual');
     const ctx = getAudioCtx();
     const osc = ctx.createOscillator();
@@ -1175,18 +968,15 @@
     osc.start();
     currentEjectOsc = osc;
 
-    btnText.innerText = `${t.tab2BtnStop} (${currentFreq} Hz)`;
-    btn.style.background = "linear-gradient(135deg, #ef4444, #b91c1c)";
-    visual.classList.remove('wave-active');
-
+    btn.innerHTML = `<span>⏹️ ОСТАНОВИТЬ (${currentFreq} Гц)</span>`;
+    btn.style.background = 'linear-gradient(135deg, #ef4444, #b91c1c)';
+    visual.classList.add('wave-active');
     startEjectHaptics(currentFreq);
-    showToast(`📳 ${currentFreq} Hz Pulse Active!`);
+    showToast(`📳 ${currentFreq} Гц продувка активна!`);
   }
 
-  function stopEjectWave() {
-    const t = I18N[currentLang];
+  function stopTabEject() {
     const btn = document.getElementById('waveBtn');
-    const btnText = document.getElementById('tab2BtnText');
     const visual = document.getElementById('waveVisual');
 
     if (currentEjectOsc) {
@@ -1195,10 +985,10 @@
     }
     stopEjectHaptics();
 
-    btnText.innerText = t.tab2BtnStart;
-    btn.style.background = "linear-gradient(135deg, #a78bfa 0%, #6c4ded 50%, #452eb8 100%)";
+    btn.innerHTML = `<span>⭐ ЗАПУСТИТЬ ПРОДУВКУ (1 ЗВЕЗДА)</span>`;
+    btn.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
     visual.classList.remove('wave-active');
-    showToast(t.ejectStopped);
+    showToast('Выдув остановлен');
   }
 
   function switchTab(tabId, el) {
@@ -1209,14 +999,9 @@
     if (target) target.classList.add('active');
     if (el) el.classList.add('active');
     playTone(400, 0.05);
-
-    if (tabId === 'tab-clean') {
-      refreshCleanUI();
-    }
   }
 
   function coolCPU() {
-    const t = I18N[currentLang];
     playTone(500, 0.1);
     triggerTgHaptic('heavy');
     const temp = document.getElementById('cpuTemp');
@@ -1224,20 +1009,18 @@
     const proc = document.getElementById('procCount');
     const ram = document.getElementById('ramFree');
     const btn = document.getElementById('cpuCoolBtn');
-    const btnText = document.getElementById('cpuBtnText');
 
-    btnText.innerText = t.cpuBtnWorking;
+    btn.innerText = '⏳ Оптимизация процессов...';
     btn.disabled = true;
 
     setTimeout(() => {
-      temp.innerText = "31.8°C";
-      temp.style.color = "var(--accent-green)";
-      desc.innerText = t.cpuStatusCool;
-      if (proc) proc.innerText = t.procCooled;
-      if (ram) ram.innerText = t.ramCooled;
-      btnText.innerText = t.cpuBtnDone;
+      temp.innerText = '31.8°C';
+      temp.style.color = 'var(--accent-green)';
+      if (proc) proc.innerText = '5 фоновых служб';
+      if (ram) ram.innerText = '4.9 ГБ свободно';
+      btn.innerText = '❄️ Нагрузка снижена';
       btn.disabled = false;
-      showToast("❄️ CPU Optimized!");
+      showToast('❄️ CPU Optimized!');
       playTone(880, 0.2);
       triggerTgHaptic('success');
     }, 1200);
@@ -1247,9 +1030,7 @@
     const toast = document.getElementById('toastBox');
     toast.innerText = text;
     toast.classList.add('show');
-    setTimeout(() => {
-      toast.classList.remove('show');
-    }, 2500);
+    setTimeout(() => toast.classList.remove('show'), 2500);
   }
 
   let audioCtx = null;
@@ -1280,25 +1061,11 @@
     triggerTgHaptic('light');
     const btn = document.getElementById('audioBtn');
     btn.innerText = soundEnabled ? '🔊' : '🔇';
-    showToast(soundEnabled ? I18N[currentLang].soundOn : I18N[currentLang].soundOff);
+    showToast(soundEnabled ? 'Звуки включены' : 'Звуки выключены');
   }
 
   window.addEventListener('DOMContentLoaded', () => {
-    // Автоопределение языка Telegram
-    let detectedLang = 'ru';
-    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.language_code) {
-      const userLang = tg.initDataUnsafe.user.language_code.toLowerCase();
-      if (!userLang.startsWith('ru')) {
-        detectedLang = 'en';
-      }
-    } else {
-      const browserLang = (navigator.language || navigator.userLanguage || 'ru').toLowerCase();
-      if (!browserLang.startsWith('ru')) {
-        detectedLang = 'en';
-      }
-    }
-
-    applyLanguage(detectedLang);
+    updateStarsUI();
   });
 </script>
 </body>
