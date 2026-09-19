@@ -89,7 +89,6 @@
       gap: 12px;
     }
 
-    /* Рамка под оригинальный файл logo.png с аккуратным кадрированием */
     .brand-icon-frame {
       width: 46px;
       height: 46px;
@@ -162,7 +161,6 @@
       gap: 8px;
     }
 
-    /* Кнопка баланса звёзд в шапке */
     .star-balance-btn {
       display: flex;
       align-items: center;
@@ -370,7 +368,7 @@
       gap: 6px;
     }
 
-    /* Золотые кнопки Telegram Stars */
+    /* Золотые кнопки со звёздами */
     .btn-turbo {
       background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
       border: 1px solid rgba(253, 230, 138, 0.4);
@@ -455,7 +453,6 @@
     }
     .toast-msg.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-    /* Шторка покупки звёзд */
     .stars-modal {
       display: none;
       position: fixed;
@@ -515,7 +512,6 @@
   <header class="header">
     <div class="brand-wrap">
       <div class="brand-icon-frame">
-        <!-- Прямой вызов оригинального файла logo.png со страховкой на онлайн-адрес -->
         <img 
           src="logo.png" 
           alt="Pixlorn" 
@@ -533,10 +529,9 @@
     </div>
 
     <div class="header-right">
-      <!-- Баланс звёзд + кнопка пополнения -->
       <button class="star-balance-btn" onclick="openStarsModal()">
         <span>⭐</span>
-        <span id="starBalanceTxt">10</span>
+        <span id="starBalanceTxt">0</span>
         <span style="font-size: 0.68rem; opacity: 0.85;">+</span>
       </button>
       <button class="icon-btn" onclick="toggleAudio()" id="audioBtn">🔊</button>
@@ -771,7 +766,8 @@
     }
   }
 
-  let userStars = parseInt(localStorage.getItem('pixlorn_stars_bal') || '10', 10);
+  // Честный стартовый баланс = 0 звёзд (без бесплатных накруток)
+  let userStars = parseInt(localStorage.getItem('pixlorn_stars_bal') || '0', 10);
   let soundEnabled = true;
   let currentEjectOsc = null;
   let currentFreq = 165;
@@ -792,21 +788,20 @@
     document.getElementById('starsModal').classList.remove('open');
   }
 
+  // Запрос инвойса на покупку звёзд через бота
   function buyStarPack(amount) {
     triggerTgHaptic('heavy');
     closeStarsModal();
     if (tg && tg.sendData) {
       tg.sendData(`action:invoice_stars_${amount}`);
-      showToast(`⭐ Запрос на ${amount} звёзд отправлен в чат!`);
+      showToast(`⭐ Запрос на ${amount} звёзд отправлен боту!`);
+      setTimeout(() => { tg.close(); }, 1200);
     } else {
-      userStars += amount;
-      updateStarsUI();
-      triggerTgHaptic('success');
-      showToast(`⭐ Начислено +${amount} звёзд!`);
+      showToast(`⭐ Для покупки откройте бота в Telegram.`);
     }
   }
 
-  // Единая логика платных процедур за 1 звезду
+  // Платная процедура за 1 звезду
   function runPaidAction(type) {
     if (type === 'eject_main' && currentEjectOsc) {
       stopHeroEject();
@@ -817,13 +812,15 @@
       return;
     }
 
+    // Если звёзд нет — сразу предлагаем купить
     if (userStars < 1) {
       triggerTgHaptic('heavy');
-      showToast('❌ Недостаточно звёзд! Пополните баланс.');
+      showToast('❌ Баланс: 0 ⭐. Пополните счёт!');
       openStarsModal();
       return;
     }
 
+    // Списываем 1 реальную звезду
     userStars -= 1;
     updateStarsUI();
     triggerTgHaptic('success');
@@ -985,7 +982,7 @@
     }
     stopEjectHaptics();
 
-    btn.innerHTML = `<span>⭐ ЗАПУСТИТЬ ПРОДУВКУ (1 ЗВЕЗДА)</span>`;
+    btn.innerHTML = '<span>⭐ ЗАПУСТИТЬ ПРОДУВКУ (1 ЗВЕЗДА)</span>';
     btn.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
     visual.classList.remove('wave-active');
     showToast('Выдув остановлен');
@@ -1016,6 +1013,7 @@
     setTimeout(() => {
       temp.innerText = '31.8°C';
       temp.style.color = 'var(--accent-green)';
+      desc.innerText = 'Все неактивные службы выгружены. Нагрузка минимальна.';
       if (proc) proc.innerText = '5 фоновых служб';
       if (ram) ram.innerText = '4.9 ГБ свободно';
       btn.innerText = '❄️ Нагрузка снижена';
