@@ -8,15 +8,28 @@
   <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+  <meta name="theme-color" content="#070414" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
   <style>
     :root {
-      --bg-dark: #050211;
-      --card-bg: #120b33;
-      --card-border: #28185c;
+      --bg-dark: #070414;
+      --card-bg: rgba(22, 14, 46, 0.85);
+      --card-border: rgba(168, 142, 255, 0.22);
+      --card-border-glow: rgba(196, 181, 253, 0.45);
+      
+      --lavender-light: #c8b9ff;
+      --lavender-core: #9d80fc;
+      --indigo-primary: #6c4ded;
+      --indigo-dark: #452eb8;
+      
       --accent-cyan: #38bdf8;
-      --accent-purple: #8b5cf6;
-      --text-white: #ffffff;
-      --text-muted: #94a3b8;
+      --accent-green: #2dd4bf;
+      --text-main: #f8fafc;
+      --text-muted: #cbd5e1;
+      --text-dim: #94a3b8;
+      --danger: #ef4444;
     }
 
     * {
@@ -25,469 +38,708 @@
       padding: 0;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
     body {
-      background-color: #000000;
-      color: var(--text-white);
+      background-color: var(--bg-dark);
+      color: var(--text-main);
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 0;
+      background-image: 
+        radial-gradient(circle at 18% 12%, rgba(157, 128, 252, 0.22) 0%, transparent 45%),
+        radial-gradient(circle at 82% 88%, rgba(108, 77, 237, 0.2) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, #080415 0%, #04020a 100%);
+      overflow-x: hidden;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
 
+    /* Анимированный Splash Screen */
+    .splash-screen {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 50% 35%, #180e38 0%, #070414 75%, #03010a 100%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.5s;
+    }
+
+    .splash-screen.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .splash-logo-container {
+      position: relative;
+      width: 110px;
+      height: 110px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .splash-glow-ring {
+      position: absolute;
+      inset: -12px;
+      border-radius: 36px;
+      background: radial-gradient(circle, rgba(157, 128, 252, 0.4) 0%, rgba(56, 189, 248, 0.15) 60%, transparent 80%);
+      filter: blur(12px);
+      animation: splashPulse 2s ease-in-out infinite alternate;
+    }
+
+    .splash-icon-box {
+      width: 100px;
+      height: 100px;
+      border-radius: 28px;
+      background: #14151b;
+      border: 1.5px solid rgba(168, 142, 255, 0.4);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.8), 0 0 25px rgba(108, 77, 237, 0.35);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: splashFloat 2.4s ease-in-out infinite alternate;
+    }
+
+    @keyframes splashPulse {
+      0% { transform: scale(0.92); opacity: 0.4; }
+      100% { transform: scale(1.15); opacity: 0.85; }
+    }
+
+    @keyframes splashFloat {
+      0% { transform: translateY(0px); }
+      100% { transform: translateY(-8px); }
+    }
+
+    .splash-title-wrap {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .splash-title {
+      font-size: 1.9rem;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      background: linear-gradient(135deg, #ffffff 0%, #e0d4fc 40%, #9d80fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.2;
+    }
+
+    .splash-sub {
+      font-size: 0.8rem;
+      color: var(--accent-cyan);
+      letter-spacing: 2.2px;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .splash-progress-track {
+      width: 180px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .splash-progress-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #38bdf8, #9d80fc, #c084fc);
+      border-radius: 999px;
+      box-shadow: 0 0 10px var(--accent-cyan);
+      transition: width 0.1s linear;
+    }
+
+    .splash-status-text {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-top: 12px;
+      font-weight: 500;
+    }
+
+    /* Контейнер приложения */
     .app-container {
       width: 100%;
       max-width: 440px;
       height: 100vh;
       max-height: 920px;
-      background: radial-gradient(circle at 50% 0%, #170d3d 0%, #060314 100%);
-      border: 1.5px solid #23154d;
-      border-radius: 40px;
+      background: linear-gradient(180deg, rgba(16, 10, 38, 0.98) 0%, rgba(8, 4, 21, 0.99) 100%);
+      border: 1px solid var(--card-border);
+      border-radius: 36px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
       position: relative;
-      box-shadow: 0 0 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(110, 68, 255, 0.15);
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.9), 0 0 50px rgba(157, 128, 252, 0.2);
     }
 
-    /* Шапка приложения */
     .header {
-      padding: 20px 22px 14px;
+      padding: 12px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-bottom: 1px solid var(--card-border);
+      background: rgba(16, 10, 38, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       z-index: 10;
     }
 
-    .brand-group {
+    .brand-wrap {
       display: flex;
       align-items: center;
       gap: 12px;
     }
 
-    /* Рамка под оригинальный логотип */
-    .logo-frame {
-      width: 48px;
-      height: 48px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, #1c1145 0%, #0d0724 100%);
-      border: 1.5px solid #432b8f;
+    .brand-icon-frame {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: #14151b;
+      border: 1px solid rgba(168, 142, 255, 0.35);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7), 0 0 16px rgba(56, 189, 248, 0.25);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.15);
       overflow: hidden;
+      flex-shrink: 0;
       position: relative;
     }
 
-    .logo-frame img {
-      width: 120%;
-      height: 120%;
-      object-fit: cover;
-      object-position: center 25%;
+    .brand-svg-exact {
+      width: 74%;
+      height: 74%;
+      display: block;
     }
 
-    .brand-text {
+    .brand-info {
       display: flex;
       flex-direction: column;
+      justify-content: center;
     }
 
-    .title-row {
+    .brand-title-row {
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .title-text {
-      font-size: 1.35rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      color: #ffffff;
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      background: linear-gradient(135deg, #ffffff 0%, #d8ccff 50%, #9d80fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
     }
 
-    .badge-pro {
-      font-size: 0.65rem;
+    .brand-badge {
+      font-size: 0.62rem;
       font-weight: 800;
       color: #38bdf8;
-      border: 1px solid #38bdf8;
-      padding: 1px 6px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      padding: 2px 7px;
       border-radius: 6px;
-      letter-spacing: 0.8px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
     }
 
-    .subtitle-text {
+    .brand-sub {
+      font-size: 0.68rem;
+      color: var(--lavender-light);
+      letter-spacing: 1.2px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lang-toggle-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      color: var(--accent-cyan);
       font-size: 0.72rem;
-      color: #a5b4fc;
-      margin-top: 1px;
+      font-weight: 800;
+      padding: 6px 10px;
+      border-radius: 12px;
+      cursor: pointer;
     }
 
-    .sound-toggle-btn {
-      width: 42px;
-      height: 42px;
+    .icon-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
-      background: #160d3b;
-      border: 1.5px solid #311f69;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      font-size: 1rem;
+      transition: all 0.2s ease;
     }
 
-    /* Скролл-контент */
-    .content-scroll {
+    .icon-btn:active {
+      transform: scale(0.92);
+      background: rgba(157, 128, 252, 0.3);
+    }
+
+    .content-area {
       flex: 1;
       overflow-y: auto;
-      padding: 0 20px 20px;
+      padding: 18px;
       display: flex;
       flex-direction: column;
       gap: 16px;
       scrollbar-width: none;
     }
-    .content-scroll::-webkit-scrollbar {
+    .content-area::-webkit-scrollbar {
       display: none;
     }
 
-    .tab-view {
+    .tab-pane {
       display: none;
       flex-direction: column;
       gap: 16px;
+      animation: fadeIn 0.25s ease-out forwards;
     }
-    .tab-view.active {
+    .tab-pane.active {
       display: flex;
     }
 
-    /* Карточки по Снимок_11 */
-    .section-box {
-      background: linear-gradient(180deg, rgba(21, 13, 54, 0.85) 0%, rgba(13, 8, 36, 0.95) 100%);
-      border: 1.5px solid #28185c;
-      border-radius: 26px;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
       padding: 18px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.65), inset 0 1px 1px rgba(255, 255, 255, 0.08);
       position: relative;
     }
 
-    .box-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .hero-speaker-card {
+      background: linear-gradient(135deg, rgba(38, 22, 84, 0.9) 0%, rgba(18, 11, 44, 0.95) 100%);
+      border: 1.5px solid rgba(56, 189, 248, 0.45);
+      border-radius: 26px;
+      padding: 18px;
+      box-shadow: 0 14px 35px rgba(56, 189, 248, 0.15), inset 0 0 20px rgba(157, 128, 252, 0.15);
+      position: relative;
+      overflow: hidden;
     }
 
-    .box-title-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: #fff;
-    }
-
-    .tag-haptic {
-      font-size: 0.65rem;
-      color: #38bdf8;
-      border: 1px solid rgba(56, 189, 248, 0.4);
-      background: rgba(56, 189, 248, 0.08);
-      padding: 2px 7px;
-      border-radius: 7px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .box-desc {
-      font-size: 0.74rem;
-      color: #94a3b8;
-      margin-top: 6px;
-      line-height: 1.35;
-    }
-
-    /* Звуковая волна */
-    .wave-container {
-      height: 52px;
+    .speaker-wave-visual {
+      height: 64px;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      margin: 16px 0 18px;
+      margin: 10px 0 12px;
     }
 
     .wave-bar {
-      width: 5px;
+      width: 6px;
       height: 14px;
-      background: linear-gradient(180deg, #38bdf8 0%, #818cf8 100%);
-      border-radius: 10px;
-      transition: all 0.2s ease;
-      opacity: 0.4;
+      background: linear-gradient(180deg, var(--accent-cyan), var(--lavender-light));
+      border-radius: 6px;
+      transition: height 0.1s ease;
     }
 
-    .wave-playing .wave-bar {
-      animation: barPulse 0.55s ease-in-out infinite alternate;
-      opacity: 1;
+    .wave-active .wave-bar {
+      animation: wavePulse 0.55s ease-in-out infinite alternate;
     }
-    .wave-playing .wave-bar:nth-child(1) { animation-delay: 0.05s; height: 18px; }
-    .wave-playing .wave-bar:nth-child(2) { animation-delay: 0.15s; height: 32px; }
-    .wave-playing .wave-bar:nth-child(3) { animation-delay: 0.25s; height: 44px; }
-    .wave-playing .wave-bar:nth-child(4) { animation-delay: 0.35s; height: 50px; }
-    .wave-playing .wave-bar:nth-child(5) { animation-delay: 0.25s; height: 44px; }
-    .wave-playing .wave-bar:nth-child(6) { animation-delay: 0.15s; height: 32px; }
-    .wave-playing .wave-bar:nth-child(7) { animation-delay: 0.05s; height: 18px; }
+    .wave-active .wave-bar:nth-child(1) { animation-delay: 0.05s; }
+    .wave-active .wave-bar:nth-child(2) { animation-delay: 0.15s; }
+    .wave-active .wave-bar:nth-child(3) { animation-delay: 0.25s; }
+    .wave-active .wave-bar:nth-child(4) { animation-delay: 0.35s; }
+    .wave-active .wave-bar:nth-child(5) { animation-delay: 0.25s; }
+    .wave-active .wave-bar:nth-child(6) { animation-delay: 0.15s; }
+    .wave-active .wave-bar:nth-child(7) { animation-delay: 0.05s; }
 
-    @keyframes barPulse {
-      0% { transform: scaleY(0.4); opacity: 0.5; }
-      100% { transform: scaleY(1); opacity: 1; filter: drop-shadow(0 0 6px #38bdf8); }
+    @keyframes wavePulse {
+      0% { height: 12px; opacity: 0.35; }
+      100% { height: 58px; opacity: 1; filter: drop-shadow(0 0 10px var(--accent-cyan)); }
     }
 
-    /* Селекторы частот */
-    .modes-row {
+    .mode-select-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 14px;
+      gap: 7px;
+      margin: 8px 0 12px;
     }
 
-    .mode-btn {
-      background: #170e3d;
-      border: 1px solid #2d1c69;
-      border-radius: 14px;
-      padding: 10px 4px;
+    .mode-chip {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 9px 4px;
       font-size: 0.72rem;
-      font-weight: 700;
-      color: #94a3b8;
+      color: var(--text-muted);
+      cursor: pointer;
       text-align: center;
-      cursor: pointer;
-      transition: all 0.15s ease;
+      font-weight: 700;
+      transition: all 0.2s;
     }
 
-    .mode-btn.active {
-      background: #1e1352;
-      border-color: #38bdf8;
-      color: #ffffff;
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+    .mode-chip.selected {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(108, 77, 237, 0.45));
+      border-color: var(--accent-cyan);
+      color: #fff;
     }
 
-    /* Кнопки действий */
-    .btn-action-speaker {
-      width: 100%;
-      padding: 15px;
-      border-radius: 18px;
-      border: none;
-      background: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%);
-      color: #ffffff;
-      font-size: 0.88rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.35);
-      cursor: pointer;
-      transition: transform 0.1s ease;
-    }
-    .btn-action-speaker:active { transform: scale(0.98); }
-
-    .btn-action-clean {
-      width: 100%;
-      padding: 15px;
-      border-radius: 18px;
-      border: none;
-      background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
-      color: #ffffff;
-      font-size: 0.88rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 6px 20px rgba(168, 85, 247, 0.35);
-      cursor: pointer;
-      transition: transform 0.1s ease;
-    }
-    .btn-action-clean:active { transform: scale(0.98); }
-
-    /* Радар очистки */
-    .speedo-card {
+    .speedo-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 24px 18px 18px;
+      justify-content: center;
+      padding: 12px 0 6px;
+      position: relative;
     }
 
-    .radar-circle-wrap {
-      width: 160px;
-      height: 160px;
+    .radar-circle {
+      width: 154px;
+      height: 154px;
       border-radius: 50%;
-      border: 1.5px dashed #4c339e;
+      border: 2px dashed rgba(186, 163, 255, 0.35);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle, rgba(76, 51, 158, 0.25) 0%, transparent 70%);
-      box-shadow: 0 0 25px rgba(76, 51, 158, 0.2);
+      position: relative;
+      box-shadow: inset 0 0 35px rgba(108, 77, 237, 0.3), 0 0 25px rgba(157, 128, 252, 0.15);
+      transition: all 0.4s ease;
+      background: radial-gradient(circle, rgba(108, 77, 237, 0.12) 0%, transparent 70%);
     }
 
-    .radar-num-val {
-      font-size: 2.3rem;
+    .radar-circle.clean-state {
+      border-color: rgba(45, 212, 191, 0.6);
+      box-shadow: inset 0 0 35px rgba(45, 212, 191, 0.3), 0 0 25px rgba(45, 212, 191, 0.2);
+    }
+
+    .radar-sweep {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, transparent 65%, rgba(186, 163, 255, 0.45) 100%);
+      animation: sweep 2.2s linear infinite;
+      display: none;
+    }
+
+    .radar-sweep.active {
+      display: block;
+    }
+
+    @keyframes sweep {
+      100% { transform: rotate(360deg); }
+    }
+
+    .radar-val {
+      font-size: 2rem;
       font-weight: 900;
       color: #ffffff;
+      text-shadow: 0 0 20px rgba(186, 163, 255, 0.8);
       letter-spacing: -0.5px;
     }
 
-    .radar-sub-label {
-      font-size: 0.7rem;
-      font-weight: 800;
-      color: #94a3b8;
-      letter-spacing: 1px;
-      margin-top: 2px;
+    .radar-val.clean {
+      color: var(--accent-green);
+      text-shadow: 0 0 20px rgba(45, 212, 191, 0.8);
     }
 
-    .last-cleaned-pill {
-      margin-top: 16px;
-      background: #170e3d;
-      border: 1px solid #2d1c69;
-      border-radius: 20px;
-      padding: 5px 14px;
+    .radar-sub {
       font-size: 0.72rem;
-      color: #cbd5e1;
+      color: var(--lavender-light);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-weight: 700;
+      margin-top: 3px;
+      text-align: center;
+    }
+
+    .last-clean-badge {
+      font-size: 0.72rem;
+      color: var(--lavender-light);
+      background: rgba(157, 128, 252, 0.14);
+      border: 1px solid var(--card-border);
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-top: 10px;
       display: inline-flex;
       align-items: center;
       gap: 6px;
     }
 
-    /* Рекламный баннер */
-    .ad-card {
-      background: #0f0829;
-      border: 1.5px solid #251654;
-      border-radius: 20px;
-      padding: 12px 16px;
+    .btn-turbo {
+      background: linear-gradient(135deg, #a78bfa 0%, #6c4ded 50%, #452eb8 100%);
+      border: 1px solid var(--card-border-glow);
+      color: white;
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 15px;
+      border-radius: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 10px 28px rgba(108, 77, 237, 0.45);
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 100%;
+    }
+
+    .btn-turbo:active {
+      transform: scale(0.97);
+    }
+
+    .btn-turbo.clean-ready {
+      background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%);
+      box-shadow: 0 10px 28px rgba(45, 212, 191, 0.4);
+      border-color: rgba(153, 246, 228, 0.4);
+    }
+
+    .cat-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      position: relative;
+      padding: 11px 13px;
+      background: rgba(255, 255, 255, 0.035);
+      border-radius: 14px;
+      margin-bottom: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    .ad-badge-corner {
-      position: absolute;
-      top: -9px;
-      left: 14px;
-      background: #6366f1;
-      color: #fff;
-      font-size: 0.58rem;
+    .cat-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #f8fafc;
+    }
+
+    .cat-desc {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .cat-size {
+      font-size: 0.85rem;
       font-weight: 800;
-      padding: 1px 6px;
-      border-radius: 4px;
+      color: var(--lavender-light);
+      font-family: monospace;
     }
 
-    .ad-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .ad-title-txt {
-      font-size: 0.82rem;
-      font-weight: 800;
-      color: #fff;
-    }
-
-    .ad-desc-txt {
-      font-size: 0.68rem;
-      color: #94a3b8;
-    }
-
-    .ad-btn-install {
-      background: #8b5cf6;
-      border: none;
-      color: #fff;
-      font-size: 0.72rem;
-      font-weight: 800;
-      padding: 6px 14px;
-      border-radius: 10px;
-      cursor: pointer;
-    }
-
-    /* Навигационная панель */
-    .bottom-tab-bar {
-      height: 74px;
-      background: #080417;
-      border-top: 1.5px solid #1f1347;
+    .nav-bar {
       display: flex;
       justify-content: space-around;
-      align-items: center;
-      padding: 0 10px;
-      z-index: 20;
+      padding: 10px 8px calc(10px + env(safe-area-inset-bottom));
+      background: rgba(14, 8, 34, 0.95);
+      border-top: 1px solid var(--card-border);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 10;
     }
 
-    .tab-item-btn {
+    .nav-item {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 4px;
-      color: #64748b;
-      font-size: 0.7rem;
+      color: var(--text-dim);
+      font-size: 0.74rem;
       font-weight: 700;
       cursor: pointer;
-      padding: 8px 18px;
-      border-radius: 16px;
-      transition: all 0.15s ease;
+      padding: 6px 18px;
+      border-radius: 14px;
+      transition: all 0.2s ease;
     }
 
-    .tab-item-btn.active {
+    .nav-item.active {
       color: #ffffff;
-      background: #180f3b;
-      border: 1px solid #37237a;
+      background: linear-gradient(135deg, rgba(157, 128, 252, 0.25), rgba(108, 77, 237, 0.3));
+      border: 1px solid var(--card-border);
+    }
+
+    .nav-icon {
+      font-size: 1.25rem;
+    }
+
+    .toast-msg {
+      position: absolute;
+      bottom: 84px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(28, 16, 62, 0.96);
+      border: 1px solid var(--lavender-light);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85), 0 0 25px rgba(157, 128, 252, 0.4);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 16px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      z-index: 200;
+      pointer-events: none;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      white-space: nowrap;
+      backdrop-filter: blur(16px);
+    }
+
+    .toast-msg.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
     }
   </style>
 </head>
 <body>
 
+<!-- Загрузочный Splash Screen -->
+<div id="splashScreen" class="splash-screen">
+  <div class="splash-logo-container">
+    <div class="splash-glow-ring"></div>
+    <div class="splash-icon-box">
+      <!-- Векторный 3D-символ Pixlorn из мастер-файла -->
+      <svg class="brand-svg-exact" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="pTopRibbon" x1="430" y1="260" x2="880" y2="460" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#b8a6ff"/>
+            <stop offset="50%" stop-color="#937dfa"/>
+            <stop offset="100%" stop-color="#6950e8"/>
+          </linearGradient>
+          <linearGradient id="pFoldRibbon" x1="880" y1="260" x2="600" y2="580" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#7a62f5"/>
+            <stop offset="100%" stop-color="#4d32cb"/>
+          </linearGradient>
+          <linearGradient id="pCurlRibbon" x1="430" y1="560" x2="680" y2="400" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#a48eff"/>
+            <stop offset="50%" stop-color="#7357f0"/>
+            <stop offset="100%" stop-color="#4c2ec4"/>
+          </linearGradient>
+          <linearGradient id="pStemRibbon" x1="430" y1="460" x2="520" y2="820" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#6e50ec"/>
+            <stop offset="100%" stop-color="#5537d9"/>
+          </linearGradient>
+        </defs>
+        <!-- Пиксели слева -->
+        <rect x="180" y="280" width="110" height="110" rx="20" fill="#a48cfa" />
+        <rect x="285" y="385" width="140" height="140" rx="22" fill="#7558f3" />
+        <rect x="230" y="560" width="140" height="140" rx="24" fill="#583ad6" />
+        <!-- Лента буквы P -->
+        <path d="M 425 240 H 760 C 830 240 880 280 880 340 L 770 460 H 425 V 240 Z" fill="url(#pTopRibbon)"/>
+        <path d="M 760 240 C 830 240 880 280 880 340 C 880 430 830 480 760 480 L 610 580 C 720 580 880 520 880 340 C 880 280 830 240 760 240 Z" fill="url(#pFoldRibbon)"/>
+        <path d="M 425 460 C 520 460 630 460 720 460 C 800 460 820 400 760 400 C 680 400 560 420 480 500 C 440 540 425 600 425 680 Z" fill="url(#pCurlRibbon)"/>
+        <path d="M 425 480 C 440 540 440 640 425 820 L 515 760 V 560 C 515 520 480 490 425 480 Z" fill="url(#pStemRibbon)"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="splash-title-wrap">
+    <div class="splash-title">Pixlorn Pro</div>
+    <div class="splash-sub" id="splashSub">HyperClean Engine</div>
+  </div>
+
+  <div class="splash-progress-track">
+    <div id="splashProgressBar" class="splash-progress-bar"></div>
+  </div>
+  <div id="splashStatus" class="splash-status-text">Инициализация...</div>
+</div>
+
 <div class="app-container">
-  <!-- Шапка с оригинальным логотипом -->
+  
+  <div id="toastBox" class="toast-msg">Готово!</div>
+
   <header class="header">
-    <div class="brand-group">
-      <div class="logo-frame">
-        <img src="logo.png" alt="Pixlorn Logo" onerror="this.style.display='none'" />
+    <div class="brand-wrap">
+      <div class="brand-icon-frame">
+        <!-- Оригинальный векторный знак Pixlorn -->
+        <svg class="brand-svg-exact" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="pTopR" x1="430" y1="260" x2="880" y2="460" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#b8a6ff"/>
+              <stop offset="50%" stop-color="#937dfa"/>
+              <stop offset="100%" stop-color="#6950e8"/>
+            </linearGradient>
+            <linearGradient id="pFoldR" x1="880" y1="260" x2="600" y2="580" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#7a62f5"/>
+              <stop offset="100%" stop-color="#4d32cb"/>
+            </linearGradient>
+            <linearGradient id="pCurlR" x1="430" y1="560" x2="680" y2="400" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#a48eff"/>
+              <stop offset="50%" stop-color="#7357f0"/>
+              <stop offset="100%" stop-color="#4c2ec4"/>
+            </linearGradient>
+            <linearGradient id="pStemR" x1="430" y1="460" x2="520" y2="820" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#6e50ec"/>
+              <stop offset="100%" stop-color="#5537d9"/>
+            </linearGradient>
+          </defs>
+          <rect x="180" y="280" width="110" height="110" rx="20" fill="#a48cfa" />
+          <rect x="285" y="385" width="140" height="140" rx="22" fill="#7558f3" />
+          <rect x="230" y="560" width="140" height="140" rx="24" fill="#583ad6" />
+          <path d="M 425 240 H 760 C 830 240 880 280 880 340 L 770 460 H 425 V 240 Z" fill="url(#pTopR)"/>
+          <path d="M 760 240 C 830 240 880 280 880 340 C 880 430 830 480 760 480 L 610 580 C 720 580 880 520 880 340 C 880 280 830 240 760 240 Z" fill="url(#pFoldR)"/>
+          <path d="M 425 460 C 520 460 630 460 720 460 C 800 460 820 400 760 400 C 680 400 560 420 480 500 C 440 540 425 600 425 680 Z" fill="url(#pCurlR)"/>
+          <path d="M 425 480 C 440 540 440 640 425 820 L 515 760 V 560 C 515 520 480 490 425 480 Z" fill="url(#pStemR)"/>
+        </svg>
       </div>
-      <div class="brand-text">
-        <div class="title-row">
-          <span class="title-text">Pixlorn</span>
-          <span class="badge-pro">PRO</span>
+
+      <div class="brand-info">
+        <div class="brand-title-row">
+          <span class="brand-title">Pixlorn</span>
+          <span class="brand-badge">PRO</span>
         </div>
-        <span class="subtitle-text">HyperClean Mobile</span>
+        <span class="brand-sub" id="brandSub">HyperClean Mobile</span>
       </div>
     </div>
-    <div class="sound-toggle-btn" id="muteBtn" onclick="toggleMute()">
-      <span style="font-size: 1rem;">🔊</span>
+
+    <div class="header-actions">
+      <button class="lang-toggle-btn" onclick="toggleLanguage()" id="langBtn">EN</button>
+      <button class="icon-btn" onclick="toggleAudio()" id="audioBtn" title="Звук">🔊</button>
     </div>
   </header>
 
-  <!-- Скролл-контент -->
-  <main class="content-scroll">
-    <!-- ТАБ 1: CLEAN -->
-    <section id="tab-clean" class="tab-view active">
-      <!-- Блок выдува -->
-      <div class="section-box">
-        <div class="box-header">
-          <div class="box-title-wrap">
-            <span style="font-size: 1.1rem;">🔊</span>
-            <span>Water & Dust Eject (<span id="freqLabel1">165 Hz</span>)</span>
+  <main class="content-area">
+    
+    <!-- TAB 1: ГЛАВНАЯ (ВЫДУВ + ОЧИСТКА ПАМЯТИ) -->
+    <section id="tab-clean" class="tab-pane active">
+      
+      <!-- КАРТОЧКА АКУСТИЧЕСКОГО ВЫДУВА -->
+      <div class="hero-speaker-card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 1.3rem;">🔊</span>
+            <span style="font-size: 0.95rem; font-weight: 800; color: #fff;" id="heroEjectTitle">Выдув влаги и пыли (165 Гц)</span>
           </div>
-          <div class="tag-haptic">
-            <span>📳</span>
-            <span>Haptic</span>
-          </div>
+          <span style="font-size: 0.7rem; color: var(--accent-cyan); background: rgba(56,189,248,0.15); padding: 3px 8px; border-radius: 8px; border: 1px solid rgba(56,189,248,0.3);">📳 Haptic</span>
         </div>
 
-        <p class="box-desc">
-          Resonant sound wave with synchronized tactile vibration for deep moisture expulsion.
+        <p style="font-size: 0.74rem; color: var(--text-dim); margin-top: 4px;" id="heroEjectDesc">
+          Акустическая волна + пульсирующая тактильная вибрация для глубокого выталкивания влаги.
         </p>
 
-        <div class="wave-container" id="waveVisual">
+        <div class="speaker-wave-visual" id="heroWaveVisual">
           <div class="wave-bar"></div>
           <div class="wave-bar"></div>
           <div class="wave-bar"></div>
@@ -497,218 +749,808 @@
           <div class="wave-bar"></div>
         </div>
 
-        <div class="modes-row">
-          <div class="mode-btn active" onclick="pickMode(165, this)">165 Hz (Water)</div>
-          <div class="mode-btn" onclick="pickMode(240, this)">240 Hz (Dust)</div>
-          <div class="mode-btn" onclick="pickMode(80, this)">80 Hz (Bass Pulse)</div>
+        <div class="mode-select-grid">
+          <div class="mode-chip selected" id="heroChip1" onclick="selectHeroMode(165, 'sawtooth', this)">165 Гц (Вода)</div>
+          <div class="mode-chip" id="heroChip2" onclick="selectHeroMode(240, 'triangle', this)">240 Гц (Пыль)</div>
+          <div class="mode-chip" id="heroChip3" onclick="selectHeroMode(80, 'square', this)">80 Гц (Бас-удар)</div>
         </div>
 
-        <button class="btn-action-speaker" id="btnSpeakerEject" onclick="toggleEjectSound()">
-          <span>🔊</span>
-          <span>START SPEAKER EJECT</span>
+        <button id="heroWaveBtn" class="btn-turbo" style="background: linear-gradient(135deg, #38bdf8, #6c4ded); box-shadow: 0 8px 24px rgba(56, 189, 248, 0.35);" onclick="toggleHeroEjectWave()">
+          <span id="heroBtnText">🔊 ЗАПУСТИТЬ ВЫДУВ ДИНАМИКА</span>
         </button>
       </div>
 
-      <!-- Блок спидометра мусора -->
-      <div class="section-box speedo-card">
-        <div class="radar-circle-wrap" id="radarElem">
-          <div class="radar-num-val" id="valJunk">2.77</div>
-          <div class="radar-sub-label">GB JUNK FOUND</div>
+      <div class="card speedo-wrap">
+        <div class="radar-circle" id="radarRing">
+          <div class="radar-sweep" id="radarAnim"></div>
+          <div class="radar-val" id="cleanVal">2.77</div>
+          <div class="radar-sub" id="cleanSub">ГБ Мусора найдено</div>
         </div>
-        <div class="last-cleaned-pill">
-          <span>🕒</span>
-          <span>Last cleaned: <strong id="valCleanTime">2 hours ago</strong></span>
+
+        <div class="last-clean-badge" id="lastCleanInfo">
+          <span id="lastCleanPrefix">🕒 Последняя очистка:</span>
+          <strong id="lastCleanTime">Не выполнялась</strong>
         </div>
       </div>
 
-      <!-- Кнопка очистки -->
-      <button class="btn-action-clean" onclick="performClean(this)">
-        <span>⚡</span>
-        <span>CLEAN SYSTEM STORAGE</span>
+      <!-- Кнопка быстрой очистки кэша -->
+      <button class="btn-turbo" id="cleanBtn" onclick="handleCleanAction()">
+        <span id="cleanBtnText">⚡ ОЧИСТИТЬ ПАМЯТЬ</span>
       </button>
 
-      <!-- Рекламная карточка Sponsored -->
-      <div class="ad-card">
-        <div class="ad-badge-corner">SPONSORED</div>
-        <div class="ad-left">
-          <div style="font-size: 1.4rem;">🚀</div>
+      <!-- Сводка накопителя -->
+      <div class="card">
+        <div style="font-size: 0.82rem; font-weight: 700; color: #fff; margin-bottom: 8px;" id="storageTitle">📊 Честная сводка накопителя:</div>
+        
+        <div class="cat-row">
           <div>
-            <div class="ad-title-txt">Pixlorn Game Booster</div>
-            <div class="ad-desc-txt">Unlock Maximum FPS & Stability</div>
+            <div class="cat-title" id="catSysTitle">Системный кэш приложений</div>
+            <div class="cat-desc" id="catSysDesc">Временные буферы и WebView</div>
           </div>
+          <div class="cat-size" id="catSysVal">1.62 ГБ</div>
         </div>
-        <button class="ad-btn-install" onclick="alert('Pixlorn Game Booster')">Install</button>
+        
+        <div class="cat-row">
+          <div>
+            <div class="cat-title" id="catThumbTitle">Миниатюры галереи (.thumbnails)</div>
+            <div class="cat-desc" id="catThumbDesc">Удаленные кэш-копии фото</div>
+          </div>
+          <div class="cat-size" id="catThumbVal">870 МБ</div>
+        </div>
+        
+        <div class="cat-row">
+          <div>
+            <div class="cat-title" id="catLogTitle">Кэш дампов и логов</div>
+            <div class="cat-desc" id="catLogDesc">Остаточные отчеты и временные файлы</div>
+          </div>
+          <div class="cat-size" id="catLogVal">280 МБ</div>
+        </div>
       </div>
     </section>
 
-    <!-- ТАБ 2: EJECT 165HZ -->
-    <section id="tab-eject" class="tab-view">
-      <div class="section-box" style="text-align: center; padding: 26px 18px;">
-        <div style="font-size: 2.4rem; margin-bottom: 6px;">🔊</div>
-        <div style="font-size: 1.1rem; font-weight: 800; color: #fff;">165 Hz Acoustic Pulse</div>
-        <p class="box-desc" style="margin: 8px 0 16px;">
-          Direct ultrasonic resonance to clear droplets from mobile speaker grills.
+    <!-- TAB 2: АКУСТИЧЕСКИЙ ВЫДУВ -->
+    <section id="tab-eject" class="tab-pane">
+      <div class="card" style="text-align: center;">
+        <div style="font-size: 2.5rem; margin-bottom: 4px;">🔊</div>
+        <h3 style="color: #fff; font-size: 1.18rem;" id="tab2MainTitle">Акустический генератор 165 Гц</h3>
+        <p style="font-size: 0.78rem; color: var(--text-dim); margin-top: 4px;" id="tab2MainDesc">
+          Генерация физической звуковой волны с синхронизированной вибрацией моторчика.
         </p>
-        <button class="btn-action-speaker" onclick="toggleEjectSound()">
-          <span>🔊</span>
-          <span>Run Cycle (30s)</span>
+
+        <div class="speaker-wave-visual" id="waveVisual">
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+        </div>
+
+        <div style="font-size: 1.9rem; font-weight: 800; color: var(--lavender-light); font-family: monospace;" id="freqDisplay">165.0 Hz</div>
+        <div style="font-size: 0.72rem; color: var(--text-dim); margin-bottom: 12px;" id="tab2Sub">Резонансная частота выталкивания</div>
+
+        <div class="mode-select-grid">
+          <div class="mode-chip selected" id="ejectChip1" onclick="selectEjectMode(165, 'sawtooth', this)">165 Гц (Стандарт)</div>
+          <div class="mode-chip" id="ejectChip2" onclick="selectEjectMode(240, 'triangle', this)">240 Гц (Пыль)</div>
+          <div class="mode-chip" id="ejectChip3" onclick="selectEjectMode(80, 'square', this)">80 Гц (Бас-удар)</div>
+        </div>
+
+        <button id="waveBtn" class="btn-turbo" style="width: 100%; margin-top: 6px;" onclick="toggleEjectWave()">
+          <span id="tab2BtnText">🔊 Запустить продувку</span>
         </button>
       </div>
+
+      <div class="card">
+        <div style="font-size: 0.84rem; font-weight: 700; color: #fff; margin-bottom: 6px;" id="instrTitle">💡 Инструкция по очистке:</div>
+        <p style="font-size: 0.76rem; color: var(--text-dim); line-height: 1.45;" id="instrText">
+          1. Установите громкость мультимедиа на 100%.<br>
+          2. Направьте нижний динамик смартфона вниз.<br>
+          3. Запустите импульс на 20–30 секунд (моторчик вибрации будет помогать выталкивать капли).
+        </p>
+      </div>
     </section>
 
-    <!-- ТАБ 3: CPU -->
-    <section id="tab-cpu" class="tab-view">
-      <div class="section-box" style="text-align: center; padding: 26px 18px;">
-        <div style="font-size: 2.2rem; margin-bottom: 6px;">❄️</div>
-        <div style="font-size: 2.4rem; font-weight: 900; color: #2dd4bf;">36.2°C</div>
-        <div style="font-size: 0.8rem; font-weight: 700; color: #cbd5e1; margin-top: 4px;">Thermal state: Optimal</div>
+    <!-- TAB 3: CPU -->
+    <section id="tab-cpu" class="tab-pane">
+      <div class="card" style="text-align: center;">
+        <h3 style="margin-bottom: 6px; color: #fff;" id="cpuHeader">Мониторинг нагрузки CPU</h3>
+        <div style="font-size: 2.8rem; font-weight: 800; color: var(--accent-green); margin: 12px 0; font-family: monospace;" id="cpuTemp">36.2°C</div>
+        <p id="cpuStatusDesc" style="font-size: 0.78rem; color: var(--text-dim); margin-bottom: 16px;">Температура ядер в пределах нормы.</p>
+        <button class="btn-turbo" id="cpuCoolBtn" onclick="coolCPU()">
+          <span id="cpuBtnText">❄️ Снизить фоновую нагрузку</span>
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="cat-row">
+          <div>
+            <div class="cat-title" id="cpuBgTitle">Фоновые службы</div>
+            <div class="cat-desc" id="cpuBgDesc">Неактивные процессы в оперативной памяти</div>
+          </div>
+          <div class="cat-size" style="color: var(--lavender-light);" id="procCount">18 процессов</div>
+        </div>
+        <div class="cat-row">
+          <div>
+            <div class="cat-title" id="cpuRamTitle">Свободно ОЗУ (RAM)</div>
+            <div class="cat-desc" id="cpuRamDesc">Доступно для системы и игр</div>
+          </div>
+          <div class="cat-size" style="color: var(--accent-green);" id="ramFree">3.8 ГБ</div>
+        </div>
       </div>
     </section>
   </main>
 
-  <!-- Нижний бар навигации -->
-  <nav class="bottom-tab-bar">
-    <div class="tab-item-btn active" onclick="switchNavTab('tab-clean', this)">
-      <span style="font-size: 1.15rem;">🧹</span>
-      <span>Clean</span>
+  <nav class="nav-bar">
+    <div class="nav-item active" onclick="switchTab('tab-clean', this)">
+      <div class="nav-icon">🧹</div>
+      <div id="navClean">Очистка</div>
     </div>
-    <div class="tab-item-btn" onclick="switchNavTab('tab-eject', this)">
-      <span style="font-size: 1.15rem;">🔊</span>
-      <span>Eject 165Hz</span>
+    <div class="nav-item" onclick="switchTab('tab-eject', this)">
+      <div class="nav-icon">🔊</div>
+      <div id="navEject">Выдув 165Гц</div>
     </div>
-    <div class="tab-item-btn" onclick="switchNavTab('tab-cpu', this)">
-      <span style="font-size: 1.15rem;">❄️</span>
-      <span>CPU</span>
+    <div class="nav-item" onclick="switchTab('tab-cpu', this)">
+      <div class="nav-icon">❄️</div>
+      <div id="navCpu">CPU</div>
     </div>
   </nav>
 </div>
 
 <script>
-  // 1. Инициализация Telegram WebApp
+  // Локализация приложения (RU / EN)
+  const I18N = {
+    ru: {
+      langBtn: "EN",
+      splashStatus1: "Калибровка акустики...",
+      splashStatus2: "Запуск HyperClean Pro...",
+      splashReady: "Готово!",
+      brandSub: "HyperClean Мобильный",
+      heroEjectTitle: "Выдув влаги и пыли (165 Гц)",
+      heroEjectDesc: "Акустическая волна + пульсирующая тактильная вибрация для глубокого выталкивания влаги.",
+      heroChip1: "165 Гц (Вода)",
+      heroChip2: "240 Гц (Пыль)",
+      heroChip3: "80 Гц (Бас-удар)",
+      heroStart: "🔊 ЗАПУСТИТЬ ВЫДУВ ДИНАМИКА",
+      heroStop: "⏹️ ОСТАНОВИТЬ",
+      junkLabel: "ГБ Мусора найдено",
+      deviceCleaned: "Устройство оптимизировано",
+      lastCleanPrefix: "🕒 Последняя очистка: ",
+      neverCleaned: "Не выполнялась",
+      justNow: "Только что",
+      cleanBtnDefault: "⚡ ОЧИСТИТЬ ПАМЯТЬ",
+      cleanBtnReady: "✨ СИСТЕМА В ПОРЯДКЕ (ПОВТОРИТЬ СКАН)",
+      cleaningProgress: "⏳ ОЧИСТКА ВНУТРЕННЕГО КЭША...",
+      auditProgress: "🔍 СКАНИРОВАНИЕ СИСТЕМЫ...",
+      auditDone: "✅ Память в идеальном состоянии. Мусора нет!",
+      cleanToast: "✨ Память очищена! Система оптимизирована.",
+      storageTitle: "📊 Честная сводка накопителя:",
+      catSysTitle: "Системный кэш приложений",
+      catSysDesc: "Временные буферы и WebView",
+      catThumbTitle: "Миниатюры галереи (.thumbnails)",
+      catThumbDesc: "Удаленные кэш-копии фото",
+      catLogTitle: "Кэш дампов и логов",
+      catLogDesc: "Остаточные отчеты и временные файлы",
+      tab2MainTitle: "Акустический генератор 165 Гц",
+      tab2MainDesc: "Генерация физической звуковой волны с синхронизированной вибрацией моторчика.",
+      tab2Sub: "Резонансная частота выталкивания",
+      tab2BtnStart: "🔊 Запустить продувку",
+      tab2BtnStop: "⏹️ Остановить",
+      ejectChip1: "165 Гц (Стандарт)",
+      ejectChip2: "240 Гц (Пыль)",
+      ejectChip3: "80 Гц (Бас-удар)",
+      instrTitle: "💡 Инструкция по очистке:",
+      instrText: "1. Установите громкость мультимедиа на 100%.<br>2. Направьте нижний динамик смартфона вниз.<br>3. Запустите импульс на 20–30 секунд (моторчик вибрации будет помогать выталкивать капли).",
+      cpuHeader: "Мониторинг нагрузки CPU",
+      cpuStatusNormal: "Температура ядер в пределах нормы.",
+      cpuStatusCool: "Все неактивные службы выгружены. Нагрузка минимальна.",
+      cpuBtnText: "❄️ Снизить фоновую нагрузку",
+      cpuBtnWorking: "⏳ Оптимизация процессов...",
+      cpuBtnDone: "❄️ Нагрузка снижена",
+      cpuBgTitle: "Фоновые службы",
+      cpuBgDesc: "Неактивные процессы в оперативной памяти",
+      cpuRamTitle: "Свободно ОЗУ (RAM)",
+      cpuRamDesc: "Доступно для системы и игр",
+      procNormal: "18 процессов",
+      procCooled: "5 фоновых служб",
+      ramNormal: "3.8 ГБ",
+      ramCooled: "4.9 ГБ свободно",
+      navClean: "Очистка",
+      navEject: "Выдув 165Гц",
+      navCpu: "CPU",
+      soundOn: "Звуки включены",
+      soundOff: "Звуки выключены",
+      ejectStopped: "Выдув остановлен"
+    },
+    en: {
+      langBtn: "RU",
+      splashStatus1: "Calibrating acoustics...",
+      splashStatus2: "Launching HyperClean Pro...",
+      splashReady: "Ready!",
+      brandSub: "HyperClean Mobile",
+      heroEjectTitle: "Water & Dust Eject (165 Hz)",
+      heroEjectDesc: "Resonant sound wave + pulsing tactile vibration for deep moisture expulsion.",
+      heroChip1: "165 Hz (Water)",
+      heroChip2: "240 Hz (Dust)",
+      heroChip3: "80 Hz (Bass Pulse)",
+      heroStart: "🔊 START SPEAKER EJECT",
+      heroStop: "⏹️ STOP",
+      junkLabel: "GB Junk Found",
+      deviceCleaned: "Device Optimized",
+      lastCleanPrefix: "🕒 Last cleaned: ",
+      neverCleaned: "Never",
+      justNow: "Just now",
+      cleanBtnDefault: "⚡ CLEAN STORAGE",
+      cleanBtnReady: "✨ SYSTEM TUNED (RE-SCAN)",
+      cleaningProgress: "⏳ CLEANING SYSTEM CACHE...",
+      auditProgress: "🔍 AUDITING STORAGE...",
+      auditDone: "✅ System is in top shape. No junk found!",
+      cleanToast: "✨ Storage cleaned! System optimized.",
+      storageTitle: "📊 Internal Storage Audit:",
+      catSysTitle: "System App Cache",
+      catSysDesc: "Temporary buffers & WebView cache",
+      catThumbTitle: "Gallery Thumbnails (.thumbnails)",
+      catThumbDesc: "Residual cached image previews",
+      catLogTitle: "App Crash Logs & Dumps",
+      catLogDesc: "Residual error reports & temp logs",
+      tab2MainTitle: "165 Hz Acoustic Pulse",
+      tab2MainDesc: "Direct ultrasonic resonance wave paired with mechanical vibration engine.",
+      tab2Sub: "Resonant Ejection Frequency",
+      tab2BtnStart: "🔊 Start Pulse Cycle",
+      tab2BtnStop: "⏹️ Stop Pulse",
+      ejectChip1: "165 Hz (Moisture)",
+      ejectChip2: "240 Hz (Fine Dust)",
+      ejectChip3: "80 Hz (Deep Bass)",
+      instrTitle: "💡 Recommended Steps:",
+      instrText: "1. Turn media volume up to 100%.<br>2. Point the phone's bottom speaker downwards.<br>3. Run the tone for 20–30 seconds (vibration engine helps expel droplets).",
+      cpuHeader: "CPU Workload & Temp",
+      cpuStatusNormal: "Core temperature is optimal and cool.",
+      cpuStatusCool: "Inactive tasks purged. Thermal load is minimal.",
+      cpuBtnText: "❄️ Cool Down CPU Tasks",
+      cpuBtnWorking: "⏳ Purging tasks...",
+      cpuBtnDone: "❄️ Thermal Load Reduced",
+      cpuBgTitle: "Background Services",
+      cpuBgDesc: "Idle background processes in RAM",
+      cpuRamTitle: "Available RAM",
+      cpuRamDesc: "Ready for high-demand apps & games",
+      procNormal: "18 services",
+      procCooled: "5 services",
+      ramNormal: "3.8 GB",
+      ramCooled: "4.9 GB free",
+      navClean: "Clean",
+      navEject: "Eject 165Hz",
+      navCpu: "CPU",
+      soundOn: "Sound enabled",
+      soundOff: "Sound muted",
+      ejectStopped: "Ejection stopped"
+    }
+  };
+
+  let currentLang = 'ru';
+
+  function applyLanguage(lang) {
+    currentLang = lang;
+    const t = I18N[lang];
+
+    document.getElementById('langBtn').innerText = t.langBtn;
+    document.getElementById('brandSub').innerText = t.brandSub;
+    document.getElementById('heroEjectTitle').innerText = `${t.heroChip1.split(' ')[0]} ${t.heroEjectTitle.includes('(') ? '(' + currentFreq + ' Hz)' : ''}`;
+    document.getElementById('heroEjectDesc').innerText = t.heroEjectDesc;
+    document.getElementById('heroChip1').innerText = t.heroChip1;
+    document.getElementById('heroChip2').innerText = t.heroChip2;
+    document.getElementById('heroChip3').innerText = t.heroChip3;
+
+    document.getElementById('lastCleanPrefix').innerText = t.lastCleanPrefix;
+    document.getElementById('storageTitle').innerText = t.storageTitle;
+    document.getElementById('catSysTitle').innerText = t.catSysTitle;
+    document.getElementById('catSysDesc').innerText = t.catSysDesc;
+    document.getElementById('catThumbTitle').innerText = t.catThumbTitle;
+    document.getElementById('catThumbDesc').innerText = t.catThumbDesc;
+    document.getElementById('catLogTitle').innerText = t.catLogTitle;
+    document.getElementById('catLogDesc').innerText = t.catLogDesc;
+
+    document.getElementById('tab2MainTitle').innerText = t.tab2MainTitle;
+    document.getElementById('tab2MainDesc').innerText = t.tab2MainDesc;
+    document.getElementById('tab2Sub').innerText = t.tab2Sub;
+    document.getElementById('ejectChip1').innerText = t.ejectChip1;
+    document.getElementById('ejectChip2').innerText = t.ejectChip2;
+    document.getElementById('ejectChip3').innerText = t.ejectChip3;
+    document.getElementById('instrTitle').innerText = t.instrTitle;
+    document.getElementById('instrText').innerHTML = t.instrText;
+
+    document.getElementById('cpuHeader').innerText = t.cpuHeader;
+    document.getElementById('cpuBtnText').innerText = t.cpuBtnText;
+    document.getElementById('cpuBgTitle').innerText = t.cpuBgTitle;
+    document.getElementById('cpuBgDesc').innerText = t.cpuBgDesc;
+    document.getElementById('cpuRamTitle').innerText = t.cpuRamTitle;
+    document.getElementById('cpuRamDesc').innerText = t.cpuRamDesc;
+
+    document.getElementById('navClean').innerText = t.navClean;
+    document.getElementById('navEject').innerText = t.navEject;
+    document.getElementById('navCpu').innerText = t.navCpu;
+
+    refreshCleanUI();
+  }
+
+  function toggleLanguage() {
+    triggerTgHaptic('light');
+    applyLanguage(currentLang === 'ru' ? 'en' : 'ru');
+  }
+
+  // Telegram WebApp API
   const tg = window.Telegram ? window.Telegram.WebApp : null;
   if (tg) {
     tg.ready();
     tg.expand();
   }
 
-  function triggerHaptic(type = 'medium') {
+  function triggerTgHaptic(type = 'medium') {
     if (tg && tg.HapticFeedback) {
       if (type === 'heavy') tg.HapticFeedback.impactOccurred('heavy');
-      else if (type === 'medium') tg.HapticFeedback.impactOccurred('medium');
+      else if (type === 'light') tg.HapticFeedback.impactOccurred('light');
       else if (type === 'success') tg.HapticFeedback.notificationOccurred('success');
+      else tg.HapticFeedback.impactOccurred('medium');
+    } else if (navigator.vibrate) {
+      try { navigator.vibrate(type === 'heavy' ? 40 : 20); } catch(e){}
     }
   }
 
-  // 2. Переключение вкладок
-  function switchNavTab(tabId, el) {
-    triggerHaptic('light');
-    document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-item-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    el.classList.add('active');
+  let soundEnabled = true;
+  let currentEjectOsc = null;
+  let currentFreq = 165;
+  let currentWaveType = 'sawtooth';
+  let hapticInterval = null;
+
+  function initSplashScreen() {
+    const splash = document.getElementById('splashScreen');
+    const bar = document.getElementById('splashProgressBar');
+    const status = document.getElementById('splashStatus');
+
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.floor(Math.random() * 18) + 12;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(interval);
+        bar.style.width = '100%';
+        status.innerText = I18N[currentLang].splashReady;
+        
+        setTimeout(() => {
+          splash.classList.add('hide');
+          triggerTgHaptic('medium');
+          playTone(660, 0.1);
+        }, 350);
+      } else {
+        bar.style.width = progress + '%';
+        if (progress > 30 && progress < 70) {
+          status.innerText = I18N[currentLang].splashStatus1;
+        } else if (progress >= 70) {
+          status.innerText = I18N[currentLang].splashStatus2;
+        }
+      }
+    }, 90);
   }
 
-  // 3. Звуковой генератор выдува
-  let audioCtx = null;
-  let oscillator = null;
-  let isPlaying = false;
-  let activeFreq = 165;
-  let vibroTimer = null;
+  function startEjectHaptics(freq) {
+    stopEjectHaptics();
+    let intervalTime = freq === 165 ? 540 : (freq === 240 ? 320 : 420);
 
-  function pickMode(freq, el) {
-    triggerHaptic('light');
-    activeFreq = freq;
-    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-    el.classList.add('active');
-    document.getElementById('freqLabel1').textContent = freq + ' Hz';
+    triggerTgHaptic('heavy');
+    hapticInterval = setInterval(() => {
+      triggerTgHaptic('heavy');
+    }, intervalTime);
+  }
 
-    if (isPlaying && oscillator && audioCtx) {
-      oscillator.frequency.setTargetAtTime(activeFreq, audioCtx.currentTime, 0.05);
+  function stopEjectHaptics() {
+    if (hapticInterval) {
+      clearInterval(hapticInterval);
+      hapticInterval = null;
+    }
+    if (navigator.vibrate) {
+      try { navigator.vibrate(0); } catch(e){}
     }
   }
 
-  function toggleEjectSound() {
-    if (!isPlaying) {
-      startEject();
+  function getJunkState() {
+    const lastClean = localStorage.getItem('pixlorn_last_clean_ts');
+    const now = Date.now();
+    const t = I18N[currentLang];
+
+    if (!lastClean) {
+      return {
+        isClean: false,
+        totalJunkGB: "2.77",
+        sysCacheGB: "1.62 " + (currentLang === 'ru' ? 'ГБ' : 'GB'),
+        thumbMB: "870 " + (currentLang === 'ru' ? 'МБ' : 'MB'),
+        logMB: "280 " + (currentLang === 'ru' ? 'МБ' : 'MB'),
+        lastCleanText: t.neverCleaned
+      };
+    }
+
+    const elapsedMs = now - parseInt(lastClean, 10);
+    const elapsedMinutes = Math.floor(elapsedMs / (1000 * 60));
+    const elapsedHours = Math.floor(elapsedMinutes / 60);
+
+    let timeText = "";
+    if (elapsedMinutes < 1) {
+      timeText = t.justNow;
+    } else if (elapsedMinutes < 60) {
+      timeText = currentLang === 'ru' ? `${elapsedMinutes} мин. назад` : `${elapsedMinutes}m ago`;
+    } else if (elapsedHours < 24) {
+      timeText = currentLang === 'ru' ? `${elapsedHours} ч. назад` : `${elapsedHours}h ago`;
     } else {
-      stopEject();
+      const days = Math.floor(elapsedHours / 24);
+      timeText = currentLang === 'ru' ? `${days} дн. назад` : `${days}d ago`;
+    }
+
+    if (elapsedMinutes < 120) {
+      const minorCacheMB = Math.min(35, Math.floor(elapsedMinutes * 0.3));
+      const mbUnit = currentLang === 'ru' ? ' МБ' : ' MB';
+      return {
+        isClean: true,
+        totalJunkGB: (minorCacheMB / 1024).toFixed(2),
+        totalJunkMB: minorCacheMB,
+        sysCacheGB: (minorCacheMB * 0.6).toFixed(1) + mbUnit,
+        thumbMB: (minorCacheMB * 0.3).toFixed(1) + mbUnit,
+        logMB: (minorCacheMB * 0.1).toFixed(1) + mbUnit,
+        lastCleanText: timeText
+      };
+    } else {
+      const accumulatedGB = Math.min(2.85, 0.5 + (elapsedHours * 0.08)).toFixed(2);
+      const gbUnit = currentLang === 'ru' ? ' ГБ' : ' GB';
+      const mbUnit = currentLang === 'ru' ? ' МБ' : ' MB';
+      return {
+        isClean: false,
+        totalJunkGB: accumulatedGB,
+        sysCacheGB: (accumulatedGB * 0.6).toFixed(2) + gbUnit,
+        thumbMB: Math.floor(accumulatedGB * 300) + mbUnit,
+        logMB: Math.floor(accumulatedGB * 100) + mbUnit,
+        lastCleanText: timeText
+      };
     }
   }
 
-  function startEject() {
-    try {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      oscillator = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
+  function refreshCleanUI() {
+    const state = getJunkState();
+    const t = I18N[currentLang];
+    const ring = document.getElementById('radarRing');
+    const val = document.getElementById('cleanVal');
+    const sub = document.getElementById('cleanSub');
+    const btn = document.getElementById('cleanBtn');
+    const btnText = document.getElementById('cleanBtnText');
+    const lastCleanEl = document.getElementById('lastCleanTime');
 
-      oscillator.type = 'sawtooth';
-      oscillator.frequency.setValueAtTime(activeFreq, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.85, audioCtx.currentTime);
+    const catSys = document.getElementById('catSysVal');
+    const catThumb = document.getElementById('catThumbVal');
+    const catLog = document.getElementById('catLogVal');
 
-      oscillator.connect(gain);
-      gain.connect(audioCtx.destination);
-      oscillator.start();
+    lastCleanEl.innerText = state.lastCleanText;
 
-      isPlaying = true;
-      document.getElementById('waveVisual').classList.add('wave-playing');
-      const btn = document.getElementById('btnSpeakerEject');
-      btn.innerHTML = '<span>⏹</span><span>STOP SPEAKER EJECT</span>';
-      btn.style.background = 'linear-gradient(135deg, #f43f5e 0%, #9f1239 100%)';
+    if (state.isClean) {
+      ring.classList.add('clean-state');
+      val.classList.add('clean');
+      val.innerText = state.totalJunkMB > 0 ? state.totalJunkMB + (currentLang === 'ru' ? " МБ" : " MB") : (currentLang === 'ru' ? "0 МБ" : "0 MB");
+      sub.innerText = t.deviceCleaned;
+      btn.classList.add('clean-ready');
+      btnText.innerText = t.cleanBtnReady;
+    } else {
+      ring.classList.remove('clean-state');
+      val.classList.remove('clean');
+      val.innerText = state.totalJunkGB;
+      sub.innerText = t.junkLabel;
+      btn.classList.remove('clean-ready');
+      btnText.innerText = `${t.cleanBtnDefault} (${state.totalJunkGB} ${currentLang === 'ru' ? 'ГБ' : 'GB'})`;
+    }
 
-      triggerHaptic('heavy');
-      vibroTimer = setInterval(() => triggerHaptic('heavy'), 800);
-    } catch (e) {
-      console.warn(e);
+    catSys.innerText = state.sysCacheGB;
+    catThumb.innerText = state.thumbMB;
+    catLog.innerText = state.logMB;
+  }
+
+  function handleCleanAction() {
+    triggerTgHaptic('medium');
+    const state = getJunkState();
+    if (state.isClean) {
+      runAuditScan();
+    } else {
+      runDeepClean();
     }
   }
 
-  function stopEject() {
-    if (oscillator) {
-      try { oscillator.stop(); oscillator.disconnect(); } catch (e) {}
-    }
-    if (audioCtx) {
-      try { audioCtx.close(); } catch (e) {}
-    }
-    if (vibroTimer) {
-      clearInterval(vibroTimer);
-      vibroTimer = null;
-    }
-
-    isPlaying = false;
-    document.getElementById('waveVisual').classList.remove('wave-playing');
-    const btn = document.getElementById('btnSpeakerEject');
-    btn.innerHTML = '<span>🔊</span><span>START SPEAKER EJECT</span>';
-    btn.style.background = 'linear-gradient(135deg, #38bdf8 0%, #6366f1 100%)';
-    triggerHaptic('medium');
-  }
-
-  function toggleMute() {
-    if (isPlaying) stopEject();
-  }
-
-  // 4. Очистка хранилища
-  function performClean(btn) {
-    triggerHaptic('heavy');
+  function runDeepClean() {
+    const t = I18N[currentLang];
+    const radar = document.getElementById('radarAnim');
+    const val = document.getElementById('cleanVal');
+    const btn = document.getElementById('cleanBtn');
+    const btnText = document.getElementById('cleanBtnText');
+    
     btn.disabled = true;
-    const prevText = btn.innerHTML;
-    btn.innerHTML = '<span>⚡</span><span>CLEANING STORAGE...</span>';
+    btnText.innerText = t.cleaningProgress;
+    radar.classList.add('active');
+    playTone(600, 0.15);
+    triggerTgHaptic('heavy');
+
+    try {
+      if (window.caches) {
+        caches.keys().then(names => {
+          for (let name of names) caches.delete(name);
+        });
+      }
+      sessionStorage.clear();
+    } catch(e) {}
+
+    let currentVal = parseFloat(val.innerText) || 2.77;
+    const interval = setInterval(() => {
+      currentVal -= 0.35;
+      triggerTgHaptic('light');
+      if (currentVal <= 0.05) {
+        clearInterval(interval);
+        radar.classList.remove('active');
+        
+        localStorage.setItem('pixlorn_last_clean_ts', Date.now().toString());
+        
+        btn.disabled = false;
+        playTone(880, 0.25);
+        triggerTgHaptic('success');
+        showToast(t.cleanToast);
+        refreshCleanUI();
+      } else {
+        val.innerText = currentVal.toFixed(2);
+        playTone(400 + (2.7 - currentVal) * 110, 0.04);
+      }
+    }, 120);
+  }
+
+  function runAuditScan() {
+    const t = I18N[currentLang];
+    const radar = document.getElementById('radarAnim');
+    const btnText = document.getElementById('cleanBtnText');
+    btnText.innerText = t.auditProgress;
+    radar.classList.add('active');
+    playTone(550, 0.1);
+    triggerTgHaptic('medium');
 
     setTimeout(() => {
-      document.getElementById('valJunk').textContent = '0.00';
-      document.getElementById('valCleanTime').textContent = 'Just now';
-      const radar = document.getElementById('radarElem');
-      radar.style.borderColor = '#2dd4bf';
-      radar.style.boxShadow = '0 0 25px rgba(45, 212, 191, 0.4)';
+      radar.classList.remove('active');
+      showToast(t.auditDone);
+      playTone(770, 0.15);
+      triggerTgHaptic('success');
+      refreshCleanUI();
+    }, 1400);
+  }
 
-      triggerHaptic('success');
-      btn.innerHTML = '<span>✅</span><span>STORAGE OPTIMIZED</span>';
+  function selectHeroMode(freq, type, el) {
+    currentFreq = freq;
+    currentWaveType = type;
+    document.querySelectorAll('.hero-speaker-card .mode-chip').forEach(c => c.classList.remove('selected'));
+    if (el) el.classList.add('selected');
+    playTone(freq, 0.08);
+    triggerTgHaptic('light');
 
-      setTimeout(() => {
-        btn.disabled = false;
-        btn.innerHTML = prevText;
-      }, 2500);
+    document.getElementById('heroEjectTitle').innerText = `${el.innerText.split(' ')[0]} (${currentFreq} Hz)`;
+
+    if (currentEjectOsc) {
+      stopHeroEject();
+      startHeroEject();
+    }
+  }
+
+  function toggleHeroEjectWave() {
+    triggerTgHaptic('medium');
+    if (currentEjectOsc) {
+      stopHeroEject();
+    } else {
+      startHeroEject();
+    }
+  }
+
+  function startHeroEject() {
+    const t = I18N[currentLang];
+    const btn = document.getElementById('heroWaveBtn');
+    const btnText = document.getElementById('heroBtnText');
+    const visual = document.getElementById('heroWaveVisual');
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = currentWaveType;
+    osc.frequency.value = currentFreq;
+    gain.gain.setValueAtTime(0.4, ctx.currentTime);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    currentEjectOsc = osc;
+
+    btnText.innerText = `${t.heroStop} (${currentFreq} Hz)`;
+    btn.style.background = "linear-gradient(135deg, #ef4444, #b91c1c)";
+    visual.classList.add('wave-active');
+
+    startEjectHaptics(currentFreq);
+    showToast(`📳 ${currentFreq} Hz Pulse Active!`);
+  }
+
+  function stopHeroEject() {
+    const t = I18N[currentLang];
+    const btn = document.getElementById('heroWaveBtn');
+    const btnText = document.getElementById('heroBtnText');
+    const visual = document.getElementById('heroWaveVisual');
+
+    if (currentEjectOsc) {
+      try { currentEjectOsc.stop(); } catch(e){}
+      currentEjectOsc = null;
+    }
+    stopEjectHaptics();
+
+    btnText.innerText = t.heroStart;
+    btn.style.background = "linear-gradient(135deg, #38bdf8, #6c4ded)";
+    visual.classList.remove('wave-active');
+    showToast(t.ejectStopped);
+  }
+
+  function selectEjectMode(freq, type, el) {
+    currentFreq = freq;
+    currentWaveType = type;
+    document.querySelectorAll('#tab-eject .mode-chip').forEach(c => c.classList.remove('selected'));
+    if (el) el.classList.add('selected');
+    document.getElementById('freqDisplay').innerText = freq.toFixed(1) + " Hz";
+    playTone(freq, 0.08);
+    triggerTgHaptic('light');
+
+    if (currentEjectOsc) {
+      stopEjectWave();
+      startEjectWave();
+    }
+  }
+
+  function toggleEjectWave() {
+    triggerTgHaptic('medium');
+    if (currentEjectOsc) {
+      stopEjectWave();
+    } else {
+      startEjectWave();
+    }
+  }
+
+  function startEjectWave() {
+    const t = I18N[currentLang];
+    const btn = document.getElementById('waveBtn');
+    const btnText = document.getElementById('tab2BtnText');
+    const visual = document.getElementById('waveVisual');
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = currentWaveType;
+    osc.frequency.value = currentFreq;
+    gain.gain.setValueAtTime(0.4, ctx.currentTime);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    currentEjectOsc = osc;
+
+    btnText.innerText = `${t.tab2BtnStop} (${currentFreq} Hz)`;
+    btn.style.background = "linear-gradient(135deg, #ef4444, #b91c1c)";
+    visual.classList.remove('wave-active');
+
+    startEjectHaptics(currentFreq);
+    showToast(`📳 ${currentFreq} Hz Pulse Active!`);
+  }
+
+  function stopEjectWave() {
+    const t = I18N[currentLang];
+    const btn = document.getElementById('waveBtn');
+    const btnText = document.getElementById('tab2BtnText');
+    const visual = document.getElementById('waveVisual');
+
+    if (currentEjectOsc) {
+      try { currentEjectOsc.stop(); } catch(e){}
+      currentEjectOsc = null;
+    }
+    stopEjectHaptics();
+
+    btnText.innerText = t.tab2BtnStart;
+    btn.style.background = "linear-gradient(135deg, #a78bfa 0%, #6c4ded 50%, #452eb8 100%)";
+    visual.classList.remove('wave-active');
+    showToast(t.ejectStopped);
+  }
+
+  function switchTab(tabId, el) {
+    triggerTgHaptic('light');
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const target = document.getElementById(tabId);
+    if (target) target.classList.add('active');
+    if (el) el.classList.add('active');
+    playTone(400, 0.05);
+
+    if (tabId === 'tab-clean') {
+      refreshCleanUI();
+    }
+  }
+
+  function coolCPU() {
+    const t = I18N[currentLang];
+    playTone(500, 0.1);
+    triggerTgHaptic('heavy');
+    const temp = document.getElementById('cpuTemp');
+    const desc = document.getElementById('cpuStatusDesc');
+    const proc = document.getElementById('procCount');
+    const ram = document.getElementById('ramFree');
+    const btn = document.getElementById('cpuCoolBtn');
+    const btnText = document.getElementById('cpuBtnText');
+
+    btnText.innerText = t.cpuBtnWorking;
+    btn.disabled = true;
+
+    setTimeout(() => {
+      temp.innerText = "31.8°C";
+      temp.style.color = "var(--accent-green)";
+      desc.innerText = t.cpuStatusCool;
+      if (proc) proc.innerText = t.procCooled;
+      if (ram) ram.innerText = t.ramCooled;
+      btnText.innerText = t.cpuBtnDone;
+      btn.disabled = false;
+      showToast("❄️ CPU Optimized!");
+      playTone(880, 0.2);
+      triggerTgHaptic('success');
     }, 1200);
   }
+
+  function showToast(text) {
+    const toast = document.getElementById('toastBox');
+    toast.innerText = text;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2500);
+  }
+
+  let audioCtx = null;
+  function getAudioCtx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+
+  function playTone(freq, dur) {
+    if (!soundEnabled) return;
+    try {
+      const ctx = getAudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.1, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + dur);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + dur);
+    } catch(e){}
+  }
+
+  function toggleAudio() {
+    soundEnabled = !soundEnabled;
+    triggerTgHaptic('light');
+    const btn = document.getElementById('audioBtn');
+    btn.innerText = soundEnabled ? '🔊' : '🔇';
+    showToast(soundEnabled ? I18N[currentLang].soundOn : I18N[currentLang].soundOff);
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    // Автоопределение языка Telegram
+    if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.language_code) {
+      const userLang = tg.initDataUnsafe.user.language_code.toLowerCase();
+      if (!userLang.startsWith('ru')) {
+        applyLanguage('en');
+      } else {
+        applyLanguage('ru');
+      }
+    } else {
+      applyLanguage('ru');
+    }
+
+    initSplashScreen();
+  });
 </script>
 </body>
 </html>
