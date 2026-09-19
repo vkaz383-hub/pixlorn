@@ -98,7 +98,7 @@
       width: 100px;
       height: 100px;
       border-radius: 28px;
-      background: #14151b;
+      background: #0d0724;
       border: 1.5px solid rgba(168, 142, 255, 0.4);
       box-shadow: 0 16px 36px rgba(0, 0, 0, 0.8), 0 0 25px rgba(108, 77, 237, 0.35);
       position: relative;
@@ -107,6 +107,15 @@
       align-items: center;
       justify-content: center;
       animation: splashFloat 2.4s ease-in-out infinite alternate;
+    }
+
+    .splash-icon-box img {
+      width: 140%;
+      height: 140%;
+      object-fit: cover;
+      object-position: center 22%;
+      mix-blend-mode: screen;
+      display: block;
     }
 
     @keyframes splashPulse {
@@ -168,7 +177,7 @@
       font-weight: 500;
     }
 
-    /* Контейнер приложения */
+    /* Основной контейнер */
     .app-container {
       width: 100%;
       max-width: 440px;
@@ -202,11 +211,12 @@
       gap: 12px;
     }
 
+    /* Оригинальный логотип из logo.png */
     .brand-icon-frame {
       width: 46px;
       height: 46px;
       border-radius: 14px;
-      background: #14151b;
+      background: #0d0724;
       border: 1px solid rgba(168, 142, 255, 0.35);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7), 0 0 16px rgba(56, 189, 248, 0.25);
       display: flex;
@@ -217,9 +227,12 @@
       position: relative;
     }
 
-    .brand-svg-exact {
-      width: 74%;
-      height: 74%;
+    .brand-icon-frame img {
+      width: 135%;
+      height: 135%;
+      object-fit: cover;
+      object-position: center 22%;
+      mix-blend-mode: screen;
       display: block;
     }
 
@@ -615,49 +628,18 @@
 </head>
 <body>
 
-<!-- Загрузочный Splash Screen -->
+<!-- Загрузочный Splash Screen с оригинальным логотипом -->
 <div id="splashScreen" class="splash-screen">
   <div class="splash-logo-container">
     <div class="splash-glow-ring"></div>
     <div class="splash-icon-box">
-      <!-- Векторный 3D-символ Pixlorn из мастер-файла -->
-      <svg class="brand-svg-exact" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="pTopRibbon" x1="430" y1="260" x2="880" y2="460" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#b8a6ff"/>
-            <stop offset="50%" stop-color="#937dfa"/>
-            <stop offset="100%" stop-color="#6950e8"/>
-          </linearGradient>
-          <linearGradient id="pFoldRibbon" x1="880" y1="260" x2="600" y2="580" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#7a62f5"/>
-            <stop offset="100%" stop-color="#4d32cb"/>
-          </linearGradient>
-          <linearGradient id="pCurlRibbon" x1="430" y1="560" x2="680" y2="400" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#a48eff"/>
-            <stop offset="50%" stop-color="#7357f0"/>
-            <stop offset="100%" stop-color="#4c2ec4"/>
-          </linearGradient>
-          <linearGradient id="pStemRibbon" x1="430" y1="460" x2="520" y2="820" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#6e50ec"/>
-            <stop offset="100%" stop-color="#5537d9"/>
-          </linearGradient>
-        </defs>
-        <!-- Пиксели слева -->
-        <rect x="180" y="280" width="110" height="110" rx="20" fill="#a48cfa" />
-        <rect x="285" y="385" width="140" height="140" rx="22" fill="#7558f3" />
-        <rect x="230" y="560" width="140" height="140" rx="24" fill="#583ad6" />
-        <!-- Лента буквы P -->
-        <path d="M 425 240 H 760 C 830 240 880 280 880 340 L 770 460 H 425 V 240 Z" fill="url(#pTopRibbon)"/>
-        <path d="M 760 240 C 830 240 880 280 880 340 C 880 430 830 480 760 480 L 610 580 C 720 580 880 520 880 340 C 880 280 830 240 760 240 Z" fill="url(#pFoldRibbon)"/>
-        <path d="M 425 460 C 520 460 630 460 720 460 C 800 460 820 400 760 400 C 680 400 560 420 480 500 C 440 540 425 600 425 680 Z" fill="url(#pCurlRibbon)"/>
-        <path d="M 425 480 C 440 540 440 640 425 820 L 515 760 V 560 C 515 520 480 490 425 480 Z" fill="url(#pStemRibbon)"/>
-      </svg>
+      <img src="logo.png" alt="Pixlorn" />
     </div>
   </div>
 
   <div class="splash-title-wrap">
     <div class="splash-title">Pixlorn Pro</div>
-    <div class="splash-sub" id="splashSub">HyperClean Engine</div>
+    <div class="splash-sub">HyperClean Engine</div>
   </div>
 
   <div class="splash-progress-track">
@@ -673,36 +655,7 @@
   <header class="header">
     <div class="brand-wrap">
       <div class="brand-icon-frame">
-        <!-- Оригинальный векторный знак Pixlorn -->
-        <svg class="brand-svg-exact" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="pTopR" x1="430" y1="260" x2="880" y2="460" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#b8a6ff"/>
-              <stop offset="50%" stop-color="#937dfa"/>
-              <stop offset="100%" stop-color="#6950e8"/>
-            </linearGradient>
-            <linearGradient id="pFoldR" x1="880" y1="260" x2="600" y2="580" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#7a62f5"/>
-              <stop offset="100%" stop-color="#4d32cb"/>
-            </linearGradient>
-            <linearGradient id="pCurlR" x1="430" y1="560" x2="680" y2="400" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#a48eff"/>
-              <stop offset="50%" stop-color="#7357f0"/>
-              <stop offset="100%" stop-color="#4c2ec4"/>
-            </linearGradient>
-            <linearGradient id="pStemR" x1="430" y1="460" x2="520" y2="820" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#6e50ec"/>
-              <stop offset="100%" stop-color="#5537d9"/>
-            </linearGradient>
-          </defs>
-          <rect x="180" y="280" width="110" height="110" rx="20" fill="#a48cfa" />
-          <rect x="285" y="385" width="140" height="140" rx="22" fill="#7558f3" />
-          <rect x="230" y="560" width="140" height="140" rx="24" fill="#583ad6" />
-          <path d="M 425 240 H 760 C 830 240 880 280 880 340 L 770 460 H 425 V 240 Z" fill="url(#pTopR)"/>
-          <path d="M 760 240 C 830 240 880 280 880 340 C 880 430 830 480 760 480 L 610 580 C 720 580 880 520 880 340 C 880 280 830 240 760 240 Z" fill="url(#pFoldR)"/>
-          <path d="M 425 460 C 520 460 630 460 720 460 C 800 460 820 400 760 400 C 680 400 560 420 480 500 C 440 540 425 600 425 680 Z" fill="url(#pCurlR)"/>
-          <path d="M 425 480 C 440 540 440 640 425 820 L 515 760 V 560 C 515 520 480 490 425 480 Z" fill="url(#pStemR)"/>
-        </svg>
+        <img src="logo.png" alt="Pixlorn" />
       </div>
 
       <div class="brand-info">
@@ -722,7 +675,7 @@
 
   <main class="content-area">
     
-    <!-- TAB 1: ГЛАВНАЯ (ВЫДУВ + ОЧИСТКА ПАМЯТИ) -->
+    <!-- TAB 1: ОЧИСТКА И ВЫДУВ -->
     <section id="tab-clean" class="tab-pane active">
       
       <!-- КАРТОЧКА АКУСТИЧЕСКОГО ВЫДУВА -->
@@ -768,12 +721,12 @@
         </div>
 
         <div class="last-clean-badge" id="lastCleanInfo">
-          <span id="lastCleanPrefix">🕒 Последняя очистка:</span>
+          <span id="lastCleanPrefix">🕒 Последняя очистка: </span>
           <strong id="lastCleanTime">Не выполнялась</strong>
         </div>
       </div>
 
-      <!-- Кнопка быстрой очистки кэша -->
+      <!-- Кнопка очистки кэша -->
       <button class="btn-turbo" id="cleanBtn" onclick="handleCleanAction()">
         <span id="cleanBtnText">⚡ ОЧИСТИТЬ ПАМЯТЬ</span>
       </button>
@@ -1034,7 +987,7 @@
 
     document.getElementById('langBtn').innerText = t.langBtn;
     document.getElementById('brandSub').innerText = t.brandSub;
-    document.getElementById('heroEjectTitle').innerText = `${t.heroChip1.split(' ')[0]} ${t.heroEjectTitle.includes('(') ? '(' + currentFreq + ' Hz)' : ''}`;
+    document.getElementById('heroEjectTitle').innerText = `${t.heroChip1.split(' ')[0]} ${document.getElementById('heroEjectTitle').innerText.includes('(') ? '(' + currentFreq + ' Hz)' : ''}`;
     document.getElementById('heroEjectDesc').innerText = t.heroEjectDesc;
     document.getElementById('heroChip1').innerText = t.heroChip1;
     document.getElementById('heroChip2').innerText = t.heroChip2;
@@ -1537,7 +1490,7 @@
   }
 
   window.addEventListener('DOMContentLoaded', () => {
-    // Автоопределение языка Telegram
+    // Автоопределение системного языка Telegram
     if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.language_code) {
       const userLang = tg.initDataUnsafe.user.language_code.toLowerCase();
       if (!userLang.startsWith('ru')) {
