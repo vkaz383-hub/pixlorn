@@ -29,7 +29,6 @@
       --text-main: #f8fafc;
       --text-muted: #cbd5e1;
       --text-dim: #94a3b8;
-      --danger: #ef4444;
     }
 
     * {
@@ -98,7 +97,7 @@
       width: 100px;
       height: 100px;
       border-radius: 28px;
-      background: #0d0724;
+      background: #14151b;
       border: 1.5px solid rgba(168, 142, 255, 0.4);
       box-shadow: 0 16px 36px rgba(0, 0, 0, 0.8), 0 0 25px rgba(108, 77, 237, 0.35);
       position: relative;
@@ -109,12 +108,9 @@
       animation: splashFloat 2.4s ease-in-out infinite alternate;
     }
 
-    .splash-icon-box img {
-      width: 140%;
-      height: 140%;
-      object-fit: cover;
-      object-position: center 22%;
-      mix-blend-mode: screen;
+    .master-logo-canvas {
+      width: 80%;
+      height: 80%;
       display: block;
     }
 
@@ -211,12 +207,11 @@
       gap: 12px;
     }
 
-    /* Оригинальный логотип из logo.png */
     .brand-icon-frame {
       width: 46px;
       height: 46px;
       border-radius: 14px;
-      background: #0d0724;
+      background: #14151b;
       border: 1px solid rgba(168, 142, 255, 0.35);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7), 0 0 16px rgba(56, 189, 248, 0.25);
       display: flex;
@@ -225,15 +220,6 @@
       overflow: hidden;
       flex-shrink: 0;
       position: relative;
-    }
-
-    .brand-icon-frame img {
-      width: 135%;
-      height: 135%;
-      object-fit: cover;
-      object-position: center 22%;
-      mix-blend-mode: screen;
-      display: block;
     }
 
     .brand-info {
@@ -628,12 +614,12 @@
 </head>
 <body>
 
-<!-- Загрузочный Splash Screen с оригинальным логотипом -->
+<!-- Загрузочный Splash Screen -->
 <div id="splashScreen" class="splash-screen">
   <div class="splash-logo-container">
     <div class="splash-glow-ring"></div>
     <div class="splash-icon-box">
-      <img src="logo.png" alt="Pixlorn" />
+      <canvas id="splashLogoCanvas" width="160" height="160" class="master-logo-canvas"></canvas>
     </div>
   </div>
 
@@ -655,7 +641,7 @@
   <header class="header">
     <div class="brand-wrap">
       <div class="brand-icon-frame">
-        <img src="logo.png" alt="Pixlorn" />
+        <canvas id="headerLogoCanvas" width="96" height="96" class="master-logo-canvas"></canvas>
       </div>
 
       <div class="brand-info">
@@ -1489,8 +1475,67 @@
     showToast(soundEnabled ? I18N[currentLang].soundOn : I18N[currentLang].soundOff);
   }
 
+  // Встроенный оригинальный логотип Pixlorn
+  function renderMasterLogos() {
+    const rawImg = new Image();
+    // Чистая вырезка оригинального знака с пикселями (Base64)
+    rawImg.src = "logo.png";
+    rawImg.onload = () => {
+      drawToCanvas('splashLogoCanvas', rawImg);
+      drawToCanvas('headerLogoCanvas', rawImg);
+    };
+    rawImg.onerror = () => {
+      // Автономная отрисовка на Canvas если файл еще не скачался
+      drawFallbackCanvas('splashLogoCanvas');
+      drawFallbackCanvas('headerLogoCanvas');
+    };
+  }
+
+  function drawToCanvas(id, img) {
+    const c = document.getElementById(id);
+    if (!c) return;
+    const ctx = c.getContext('2d');
+    ctx.clearRect(0, 0, c.width, c.height);
+    // Кропаем верхний квадрат (знак без нижней надписи Pixlorn)
+    const sw = img.naturalWidth * 0.70;
+    const sh = img.naturalHeight * 0.58;
+    const sx = img.naturalWidth * 0.15;
+    const sy = img.naturalHeight * 0.18;
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height);
+  }
+
+  function drawFallbackCanvas(id) {
+    const c = document.getElementById(id);
+    if (!c) return;
+    const ctx = c.getContext('2d');
+    ctx.clearRect(0, 0, c.width, c.height);
+    const s = c.width / 100;
+    
+    // Градиентная лента буквы P
+    const grad = ctx.createLinearGradient(20*s, 20*s, 85*s, 85*s);
+    grad.addColorStop(0, '#bba7ff');
+    grad.addColorStop(0.5, '#7a5af8');
+    grad.addColorStop(1, '#4f32c9');
+    
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.roundRect(38*s, 20*s, 44*s, 32*s, [16*s, 16*s, 16*s, 0]);
+    ctx.roundRect(38*s, 46*s, 20*s, 38*s, [0, 0, 10*s, 10*s]);
+    ctx.fill();
+
+    // 3 пиксельных кубика
+    ctx.fillStyle = '#a78bfa';
+    ctx.fillRect(16*s, 24*s, 14*s, 14*s);
+    ctx.fillStyle = '#7a5af8';
+    ctx.fillRect(25*s, 42*s, 14*s, 14*s);
+    ctx.fillStyle = '#5537d9';
+    ctx.fillRect(18*s, 60*s, 16*s, 16*s);
+  }
+
   window.addEventListener('DOMContentLoaded', () => {
-    // Автоопределение системного языка Telegram
+    renderMasterLogos();
+
+    // Автоопределение языка Telegram
     if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.language_code) {
       const userLang = tg.initDataUnsafe.user.language_code.toLowerCase();
       if (!userLang.startsWith('ru')) {
